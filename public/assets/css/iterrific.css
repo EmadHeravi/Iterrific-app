@@ -27,3 +27,22 @@ footer a {
 footer a:hover {
     color: #fb8c00; /* Material warning orange */
 }
+#partnersCarousel .carousel-control-prev-icon,
+#partnersCarousel .carousel-control-next-icon {
+    background-color: rgba(255, 140, 0, 0.95);
+    border-radius: 50%;
+    padding: 20px;
+    background-size: 60% 60%;
+}
+#partnersCarousel .carousel-control-prev,
+#partnersCarousel .carousel-control-next {
+    width: 5%;
+}
+
+#partnersCarousel .carousel-control-prev {
+    left: -40px;
+}
+
+#partnersCarousel .carousel-control-next {
+    right: -40px;
+}

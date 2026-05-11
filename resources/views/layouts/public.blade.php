@@ -14,7 +14,9 @@
     <link href="{{ asset('assets/css/iterrific.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @livewireStyles
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    @livewireStyles
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
     <body class="bg-gray-200 d-flex flex-column min-vh-100">
@@ -81,7 +83,7 @@
                         <div>
                             <i class="material-icons align-middle me-1" style="font-size:16px;">call</i>
                             <a href="tel:+31636199976" class="text-secondary">
-                                +31 6 36 19 99 76
+                                +31 850 70 85 80
                             </a>
                         </div>
                         <div>
@@ -118,6 +120,7 @@
 
     <!-- Core JS -->
     <script src="{{ asset('assets') }}/js/core/bootstrap.min.js"></script>
+    @livewireScripts
     <!-- Turnstile-->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
