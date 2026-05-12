@@ -13,6 +13,7 @@ Purpose: Short, actionable guidance to help an AI agent be productive immediatel
 
 ## Environment / secrets to know
 - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (used by `config/services.php` → `turnstile`) are required for the contact form (`app/Http/Controllers/ContactController.php`).
+- `IS_DEMO` env var restricts certain actions in demo mode (e.g., changing admin email in `UserProfile`).
 - Tests use `MAIL_MAILER=array` and `SESSION_DRIVER=array` (configured in `phpunit.xml`). To use in-memory sqlite tests enable the commented DB env lines in `phpunit.xml`.
 
 ## Tests & CI
@@ -32,20 +33,23 @@ Route::get('sign-in', App\Http\Livewire\Auth\Login::class)->middleware('guest')-
 
 - Static pages are often `Route::view('/about', 'about')`.
 - Assets: `resources/js/app.js` and `resources/css/app.css` → compiled by `webpack.mix.js` (Laravel Mix).
+- UI theme: Material Dashboard 2 (Bootstrap 5 based) with consistent markup in views.
 
 ## Key project-specific patterns & conventions
-- Authentication and validation: Livewire components declare `$rules` and `store()` methods that validate and perform actions, e.g. `App/Http/Livewire/Auth/Login.php`:
+- Authentication and validation: Livewire components declare `$rules` or `rules()` method and action methods (e.g., `store()`, `update()`) that validate and perform actions, e.g. `App/Http/Livewire/Auth/Login.php`:
   - `auth()->attempt($attributes)`, `session()->regenerate()`, `return redirect('/dashboard')`.
+- Model binding: Bind Eloquent models directly as public properties, e.g., `public User $user;`, and validate with dot notation `'user.email' => 'required|email'`.
+- Real-time validation: Use `updated($propertyName)` method for live validation on field changes, calling `$this->validateOnly($propertyName)`.
+- Form submission: Views use `wire:submit.prevent="methodName"` for form handling.
 - Password hashing: `App\Models\User` defines `setPasswordAttribute()` which bcrypts plain passwords. Seeders create users by passing plain `password => 'secret'` (the mutator hashes it automatically).
 - Reset password flow uses a custom notification: `App\Notifications\ResetPassword` creates a 12-hour signed URL using `URL::temporarySignedRoute('reset-password', now()->addHours(12), ['id' => $token])`. Route `reset-password` uses `signed` middleware.
-
 - Contact form anti-bot: the site uses Cloudflare Turnstile. `app/Http/Controllers/ContactController.php` posts to Cloudflare's verify endpoint (`https://challenges.cloudflare.com/turnstile/v0/siteverify`) with `services.turnstile.secret_key` and checks `success` in the response. If verification fails it returns a validation error.
-
+- Demo restrictions: Check `env('IS_DEMO')` in components to restrict actions, e.g., prevent changing admin email in `UserProfile.php`.
 
 ## Developer workflows & helpful file references
 - Add a new page:
   1. Create Livewire class in `app/Http/Livewire` (or subdir).
-  2. Create Blade view in `resources/views/livewire`.
+  2. Create Blade view in `resources/views/livewire` with Bootstrap 5 markup.
   3. Add route in `routes/web.php` using the Livewire class.
 - Fix or extend auth behavior: check `app/Http/Livewire/Auth/*` and `app/Models/User.php`.
 - Component UI lives in `resources/views/livewire/...` and uses Bootstrap 5 markup consistent with the theme.
@@ -54,6 +58,7 @@ Route::get('sign-in', App\Http\Livewire\Auth\Login::class)->middleware('guest')-
 - Livewire (v3): interactive components are server-driven (no SPA router).
 - Laravel Mix: front-end bundling, `npm run dev/watch/hot/production`.
 - Notifications & mail are used for password reset (`App\Notifications\ResetPassword`). Tests default to mailer `array`.
+- Cloudflare Turnstile for CAPTCHA on contact form.
 
 ## Helpful files to inspect when making changes
 - Routing & pages: `routes/web.php` (Livewire routes + static `Route::view` pages)
@@ -70,6 +75,7 @@ Route::get('sign-in', App\Http\Livewire\Auth\Login::class)->middleware('guest')-
 - The `User` model's `setPasswordAttribute()` will bcrypt any password set on the model — seeders and factories pass plain text intentionally.
 - The contact form will return a validation error if Turnstile verification fails; ensure `TURNSTILE_*` env vars are set.
 - Tests default to using `array` mailer and `array` session driver; adjust `phpunit.xml` if you need integration-level mail/session behavior.
+- In demo mode (`IS_DEMO=true`), certain updates (like admin email) are restricted to prevent demo tampering.
 
 ---
 If you'd like, I can expand any section with concrete code examples, a short PR checklist, or a set of targeted tests to validate common changes. Tell me which areas to expand. ✅
