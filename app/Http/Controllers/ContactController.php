@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -13,6 +14,7 @@ class ContactController extends Controller
         $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => 'required|email',
+            'subject' => 'nullable|string|max:255',
             'message' => 'required|string',
         ]);
 
@@ -32,7 +34,23 @@ class ContactController extends Controller
                 ->withInput();
         }
 
-        // 3️⃣ Success (email / DB later)
-        return back()->with('success', 'Thank you! Your message has been sent.');
+        // 3️⃣ Send email
+        Mail::raw(
+            "Name: {$request->name}\n" .
+            "Email: {$request->email}\n" .
+            "Subject: {$request->subject}\n\n" .
+            "Message:\n{$request->message}",
+            function ($message) use ($request) {
+                $message->to('info@iterrific.nl')
+                        ->replyTo($request->email, $request->name)
+                        ->subject('New Contact Request - ITerrific Website');
+            }
+        );
+
+        // 4️⃣ Success response
+        return back()->with(
+            'success',
+            'Thank you! Your message has been sent successfully.'
+        );
     }
 }
