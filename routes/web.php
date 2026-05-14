@@ -63,3 +63,11 @@ Route::get('static-sign-in', StaticSignIn::class)->name('static-sign-in');
 Route::get('static-sign-up', StaticSignUp::class)->name('static-sign-up');
 Route::get('rtl', RTL::class)->name('rtl');
 });
+
+Route::get('/401', fn () => abort(401));
+Route::get('/403', fn () => abort(403));
+Route::get('/405', fn () => abort(405));
+Route::get('/419', fn () => abort(419));
+Route::get('/429', fn () => abort(429));
+Route::get('/500', fn () => abort(500));
+Route::get('/503', fn () => abort(503));
