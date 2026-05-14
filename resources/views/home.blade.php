@@ -331,27 +331,27 @@
                     <img src="{{ asset('assets/img/clients/Borg-OSC.png') }}"
                          class="img-fluid opacity-7"
                          style="height: 140px; object-fit: contain;"
-                         alt="Client 5">
+                         alt="Client 9">
                 </div>
 
                 <div class="col-6 col-md-3">
                     <img src="{{ asset('assets/img/clients/in2itions.png') }}"
                          class="img-fluid opacity-7"
                          style="height: 140px; object-fit: contain;"
-                         alt="Client 6">
+                         alt="Client 10">
                 </div>
 
                 <div class="col-6 col-md-3">
                     <img src="{{ asset('assets/img/clients/SES.svg') }}"
                          class="img-fluid opacity-7"
                          style="height: 140px; object-fit: contain;"
-                         alt="Client 7">
+                         alt="Client 11">
                 </div>
 
                 <div class="col-6 col-md-3">
                     <img src="{{ asset('assets/img/clients/ilionx.jpg') }}"
                          class="img-fluid opacity-7"
-                         alt="Client 8">
+                         alt="Client 12">
                 </div> 
 
             </div>
