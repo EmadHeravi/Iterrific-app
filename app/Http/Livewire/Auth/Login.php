@@ -28,18 +28,42 @@ class Login extends Component
     }
     
     public function store()
-    {
-        $attributes = $this->validate();
+{
+    $attributes = $this->validate();
 
-        if (! auth()->attempt($attributes)) {
+    \Log::info('LOGIN ATTEMPT', [
+        'email' => $this->email,
+        'session_id_before' => session()->getId(),
+        'is_https' => request()->isSecure(),
+        'scheme' => request()->getScheme(),
+        'host' => request()->getHost(),
+        'cookie_secure' => config('session.secure'),
+        'session_domain' => config('session.domain'),
+    ]);
+
+    if (! auth()->attempt($attributes)) {
+
+            \Log::warning('LOGIN FAILED', [
+                'email' => $this->email,
+            ]);
+
             throw ValidationException::withMessages([
                 'email' => 'Your provided credentials could not be verified.'
             ]);
         }
 
+        \Log::info('LOGIN SUCCESS BEFORE REGENERATE', [
+            'user_id' => auth()->id(),
+            'session_id_before_regenerate' => session()->getId(),
+        ]);
+
         session()->regenerate();
 
-        return redirect('/dashboard');
+        \Log::info('LOGIN SUCCESS AFTER REGENERATE', [
+            'user_id' => auth()->id(),
+            'session_id_after_regenerate' => session()->getId(),
+        ]);
 
+        return redirect('/dashboard');
     }
 }
