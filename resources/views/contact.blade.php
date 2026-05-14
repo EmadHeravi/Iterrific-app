@@ -135,6 +135,8 @@
                     <div class="card-body p-4">
 
                         <h4 class="fw-bold mb-4">Send us a message</h4>
+
+
                         @if(session('success'))
                             <div class="alert alert-success mb-3">
                                 {{ session('success') }}
@@ -143,7 +145,13 @@
 
                         @if($errors->any())
                             <div class="alert alert-danger mb-3">
-                                {{ $errors->first() }}
+                                <strong>Form Error:</strong>
+
+                                <ul class="mb-0 mt-2">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         @endif
 
