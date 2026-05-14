@@ -68,7 +68,7 @@ class ContactController extends Controller
         // 4️⃣ Send email via Microsoft Graph
         $mailResponse = Http::withToken($accessToken)
             ->post(
-                'https://graph.microsoft.com/v1.0/users/info@iterrific.nl/sendMail',
+                'https://graph.microsoft.com/v1.0/users/' . env('MS_MAIL_FROM') . '/sendMail',
                 [
                     'message' => [
 
@@ -86,7 +86,7 @@ class ContactController extends Controller
                         'toRecipients' => [
                             [
                                 'emailAddress' => [
-                                    'address' => 'info@iterrific.nl',
+                                    'address' => env('MS_MAIL_FROM'),
                                 ],
                             ],
                         ],
