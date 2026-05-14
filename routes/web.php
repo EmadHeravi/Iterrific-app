@@ -36,6 +36,7 @@ Route::get('/', function () {
 
 Route::view('/services', 'services')->name('services');
 Route::view('/about', 'about')->name('about');
+Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/references', 'references')->name('references');
 Route::view('/contact', 'contact')->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
