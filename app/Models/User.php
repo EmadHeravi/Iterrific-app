@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,40 +12,143 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
+     * |--------------------------------------------------------------------------
+     * | Mass Assignable Fields
+     * |--------------------------------------------------------------------------
      */
+
     protected $fillable = [
-        'name',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Authentication
+        |--------------------------------------------------------------------------
+        */
+
+        'first_name',
+        'last_name',
         'email',
         'password',
-        'location',
-        'phone',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Roles & Types
+        |--------------------------------------------------------------------------
+        */
+
+        'role',
+        'user_type',
+        'employee_id',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Company Information
+        |--------------------------------------------------------------------------
+        */
+
+        'company_name',
+        'company_registration_number',
+        'vat_number',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Personal Address
+        |--------------------------------------------------------------------------
+        */
+
+        'personal_address',
+        'personal_postal_code',
+        'personal_city',
+        'personal_country',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Business Address
+        |--------------------------------------------------------------------------
+        */
+
+        'business_address',
+        'business_postal_code',
+        'business_city',
+        'business_country',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Banking
+        |--------------------------------------------------------------------------
+        */
+
+        'bank_name',
+        'bank_account_holder',
+        'iban',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Phone
+        |--------------------------------------------------------------------------
+        */
+
+        'phone_country_code',
+        'phone_number',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Profile
+        |--------------------------------------------------------------------------
+        */
+
         'about',
+
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
+     * |--------------------------------------------------------------------------
+     * | Hidden Fields
+     * |--------------------------------------------------------------------------
      */
+
     protected $hidden = [
+
         'password',
         'remember_token',
+
     ];
+
+    /**
+     * |--------------------------------------------------------------------------
+     * | Casts
+     * |--------------------------------------------------------------------------
+     */
+
+    protected $casts = [
+
+        'email_verified_at' => 'datetime',
+
+    ];
+
+    /**
+     * |--------------------------------------------------------------------------
+     * | Automatically Hash Password
+     * |--------------------------------------------------------------------------
+     */
 
     public function setPasswordAttribute($password)
     {
-        $this->attributes['password'] = bcrypt($password);
+        if (!empty($password)) {
+
+            $this->attributes['password'] = bcrypt($password);
+
+        }
     }
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
+     * |--------------------------------------------------------------------------
+     * | Full Name Helper
+     * |--------------------------------------------------------------------------
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+
+    public function getFullNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
 }

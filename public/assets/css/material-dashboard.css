@@ -17572,4 +17572,40 @@ pre[class*="language-"] {
   .ps {
     overflow: auto !important; } }
 
+/* Sync footer buttons with configurator sidebar color */
+
+.sidenav[data-color="primary"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #e91e63 0%, #e91e63 100%) !important;
+}
+
+.sidenav[data-color="secondary"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #7b809a 0%, #7b809a 100%) !important;
+}
+
+.sidenav[data-color="success"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #4CAF50 0%, #4CAF50 100%) !important;
+}
+
+.sidenav[data-color="info"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #1A73E8 0%, #1A73E8 100%) !important;
+}
+
+.sidenav[data-color="warning"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #fb8c00 0%, #fb8c00 100%) !important;
+}
+
+.sidenav[data-color="danger"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #F44335 0%, #F44335 100%) !important;
+}
+
+.sidenav[data-color="dark"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #344767 0%, #344767 100%) !important;
+}
+
+.sidenav[data-color="light"] .dynamic-config-btn,
+.sidenav[data-color="white"] .dynamic-config-btn {
+    background-image: linear-gradient(195deg, #ffffff 0%, #ffffff 100%) !important;
+    color: #344767 !important;
+}
+
 /*# sourceMappingURL=material-dashboard.css.map */

@@ -144,6 +144,21 @@ function sidebarColor(a) {
     parent.classList.remove('bg-gradient-danger');
   }
   parent.classList.add('bg-gradient-' + color);
+  console.log('Configurator color:', color);
+  document.querySelectorAll('.dynamic-config-btn').forEach((btn) => {
+
+    btn.classList.remove(
+      'bg-gradient-primary',
+      'bg-gradient-dark',
+      'bg-gradient-info',
+      'bg-gradient-success',
+      'bg-gradient-warning',
+      'bg-gradient-danger'
+    );
+
+    btn.classList.add('bg-gradient-' + color);
+
+  }); 
 }
 
 // Set Sidebar Type
