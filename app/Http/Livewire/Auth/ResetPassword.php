@@ -21,9 +21,10 @@ class ResetPassword extends Component
 
     public function render()
     {
-        return view('livewire.auth.reset-password');
+        return view('livewire.auth.reset-password')
+            ->layout('layouts.public');
     }
-
+    
     public function mount($id) {
         $existingUser = User::find($id);
         $this->urlID = intval($existingUser->id);

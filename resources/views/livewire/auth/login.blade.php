@@ -6,7 +6,7 @@
 
                     <div class="card shadow-lg">
                         <div class="card-header bg-warning text-white text-center py-3">
-                            <h4 class="mb-0 fw-bold">Client Login</h4>
+                            <h4 class="mb-0 fw-bold">Login</h4>
                         </div>
 
                         <div class="card-body p-4">
@@ -55,6 +55,22 @@
                                     <a href="{{ route('password.forgot') }}" class="text-secondary">
                                         Forgot password?
                                     </a>
+                                </div>
+                                <div class="text-center mt-3">
+
+                                    <p class="mb-0 text-sm text-secondary">
+
+                                        Don't have an account?
+
+                                        <a
+                                            href="{{ route('register') }}"
+                                            class="text-warning fw-bold"
+                                        >
+                                            Sign Up
+                                        </a>
+
+                                    </p>
+
                                 </div>
 
                             </form>
