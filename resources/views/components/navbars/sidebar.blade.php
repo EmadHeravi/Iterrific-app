@@ -235,10 +235,9 @@
 
             <a
                 class="btn bg-gradient-warning w-100 dynamic-config-btn"
-                href="https://www.creative-tim.com/product/material-dashboard-laravel-livewire"
-                target="_blank"
+                href="{{ url('/') }}"
             >
-                Free Download
+                ITerrific Home
             </a>
 
         </div>
@@ -251,19 +250,6 @@
                 target="_blank"
             >
                 View Documentation
-            </a>
-
-        </div>
-
-        <div class="mx-3">
-
-            <a
-                class="btn bg-gradient-warning w-100 dynamic-config-btn"
-                href="https://www.creative-tim.com/product/material-dashboard-pro-laravel-livewire"
-                target="_blank"
-                type="button"
-            >
-                Upgrade to Pro
             </a>
 
         </div>
