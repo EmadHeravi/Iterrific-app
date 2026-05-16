@@ -62,9 +62,15 @@
                     </li>
 
                     <li class="nav-item d-flex align-items-center ms-lg-3">
-                        <a href="/sign-in" class="btn btn-warning btn-sm mb-0">
-                            Login
-                        </a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-warning btn-sm mb-0">
+                                Dashboard
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-warning btn-sm mb-0">
+                                Login
+                            </a>
+                        @endauth
                     </li>
                 </ul>
             </div>
