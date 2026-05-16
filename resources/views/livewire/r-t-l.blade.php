@@ -89,7 +89,7 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <a class="btn bg-gradient-primary mt-4 w-100"
+                <a class="btn bg-gradient-warning dynamic-config-btn mt-4 w-100"
                     href="https://www.creative-tim.com/product/material-dashboard-pro-laravel"
                     type="button">Upgrade to pro</a>
             </div>
@@ -250,7 +250,7 @@
                     <div class="card">
                         <div class="card-header p-3 pt-2">
                             <div
-                                class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                                class="icon icon-lg icon-shape bg-gradient-warning shadow-warning dynamic-config-gradient dynamic-config-shadow text-center border-radius-xl mt-n4 position-absolute">
                                 <i class="material-icons opacity-10">leaderboard</i>
                             </div>
                             <div class="text-start pt-1">
@@ -311,7 +311,7 @@
                 <div class="col-lg-4 col-md-6 mt-4 mb-4">
                     <div class="card z-index-2 ">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-                            <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+                            <div class="bg-gradient-warning shadow-warning dynamic-config-gradient dynamic-config-shadow border-radius-lg py-3 pe-1">
                                 <div class="chart">
                                     <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
                                 </div>
@@ -775,7 +775,7 @@
                                 </div>
                                 <div class="timeline-block mb-3">
                                     <span class="timeline-step">
-                                        <i class="material-icons text-primary text-gradient">key</i>
+                                        <i class="material-icons text-warning text-gradient dynamic-config-text">key</i>
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">فتح الحزم من أجل التطوير
@@ -862,7 +862,7 @@
                 </div>
                 <a href="javascript:void(0)" class="switch-trigger background-color">
                     <div class="badge-colors my-2 text-end">
-                        <span class="badge filter bg-gradient-primary active" data-color="primary"
+                        <span class="badge filter bg-gradient-primary" data-color="primary"
                             onclick="sidebarColor(this)"></span>
                         <span class="badge filter bg-gradient-dark" data-color="dark"
                             onclick="sidebarColor(this)"></span>
@@ -870,7 +870,7 @@
                             onclick="sidebarColor(this)"></span>
                         <span class="badge filter bg-gradient-success" data-color="success"
                             onclick="sidebarColor(this)"></span>
-                        <span class="badge filter bg-gradient-warning" data-color="warning"
+                        <span class="badge filter bg-gradient-warning active" data-color="warning"
                             onclick="sidebarColor(this)"></span>
                         <span class="badge filter bg-gradient-danger" data-color="danger"
                             onclick="sidebarColor(this)"></span>

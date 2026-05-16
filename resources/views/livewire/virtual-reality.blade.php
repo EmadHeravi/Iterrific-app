@@ -61,7 +61,7 @@
                             </div>
                             <a href="javascript:;" class="bg-gray-100 w-100 text-center py-1" data-bs-toggle="tooltip"
                                 data-bs-placement="top" title="Show More">
-                                <i class="material-icons text-primary">expand_more</i>
+                                <i class="material-icons text-warning dynamic-config-text">expand_more</i>
                             </a>
                         </div>
                     </div>

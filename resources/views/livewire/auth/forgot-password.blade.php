@@ -52,7 +52,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="email"
+                                        wire:model="email"
                                         type="email"
                                         class="form-control border"
                                         placeholder="your@email.com"

@@ -15,7 +15,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
                                     <input
-                                        wire:model.defer="email"
+                                        wire:model="email"
                                         type="email"
                                         class="form-control border"
                                         placeholder=" your@email.com"
@@ -29,7 +29,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Password</label>
                                     <input
-                                        wire:model.defer="password"
+                                        wire:model="password"
                                         type="password"
                                         class="form-control border"
                                         placeholder=" Password"

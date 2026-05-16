@@ -1,32 +1,85 @@
 <div>
 
-    <div class="container-fluid py-4">
+    <div class="container-fluid px-2 px-md-4">
+
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+            style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1920&q=80'); background-position: center;">
+            <span class="mask bg-gradient-warning opacity-4 dynamic-config-gradient"></span>
+        </div>
 
         <div class="row">
 
             <div class="col-12">
 
-                <div class="card my-4">
+                <div class="card card-body mx-3 mx-md-4 mt-n6 user-management-card">
 
                     {{-- HEADER --}}
-                    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <div class="row gx-4 align-items-center mb-3">
 
-                        <div class="bg-gradient-warning shadow-warning border-radius-lg pt-4 pb-3">
+                        <div class="col-auto">
+                            <div class="avatar avatar-xl position-relative bg-gradient-warning shadow-warning dynamic-config-gradient dynamic-config-shadow border-radius-lg d-flex align-items-center justify-content-center">
+                                <i class="material-icons text-white">
+                                    group
+                                </i>
+                            </div>
+                        </div>
 
-                            <h6 class="text-white text-capitalize ps-3">
-                                User Management
-                            </h6>
+                        <div class="col-auto my-auto">
+                            <div class="h-100">
+                                <h5 class="mb-1">
+                                    User Management
+                                </h5>
+                                <p class="mb-0 font-weight-normal text-sm">
+                                    Manage accounts, roles and profile details.
+                                </p>
+                            </div>
+                        </div>
 
+                        <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+                            <div class="nav-wrapper position-relative end-0">
+                                <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1 active" href="javascript:;" role="tab">
+                                            <i class="material-icons text-lg position-relative">
+                                                manage_accounts
+                                            </i>
+                                            <span class="ms-1">
+                                                Accounts
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" href="javascript:;" role="tab">
+                                            <i class="material-icons text-lg position-relative">
+                                                admin_panel_settings
+                                            </i>
+                                            <span class="ms-1">
+                                                Roles
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
                     </div>
 
-                    {{-- ADD USER BUTTON --}}
-                    <div class="me-3 my-3 text-end">
+                    <hr class="horizontal gray-light my-3">
+
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+
+                        <div>
+                            <h6 class="mb-1">
+                                User Management
+                            </h6>
+                            <p class="text-sm text-secondary mb-0">
+                                {{ $users->count() }} users available.
+                            </p>
+                        </div>
 
                         <button
                             wire:click="openUserModal"
-                            class="btn bg-gradient-warning mb-0"
+                            class="btn bg-gradient-warning dynamic-config-btn mb-0"
                         >
 
                             <i class="material-icons text-sm">
@@ -40,7 +93,7 @@
                     </div>
 
                     {{-- TABLE --}}
-                    <div class="card-body px-0 pb-2">
+                    <div class="card-body px-0 pb-2 pt-3">
 
                         <div class="table-responsive p-0">
 
@@ -228,7 +281,8 @@
 
                                                 <button
                                                     type="button"
-                                                    class="btn btn-success btn-link"
+                                                    class="btn btn-link text-warning dynamic-config-text px-2 mb-0"
+                                                    wire:click="editUser({{ $user->id }})"
                                                 >
 
                                                     <i class="material-icons">
@@ -239,7 +293,7 @@
 
                                                 <button
                                                     type="button"
-                                                    class="btn btn-danger btn-link"
+                                                    class="btn btn-link text-danger px-2 mb-0"
                                                 >
 
                                                     <i class="material-icons">
@@ -288,6 +342,7 @@
     @if($showUserModal)
 
         <div
+            wire:ignore.self
             class="modal fade show d-block"
             tabindex="-1"
             style="background: rgba(0,0,0,0.5);"
@@ -301,7 +356,7 @@
                     <div class="modal-header">
 
                         <h5 class="modal-title">
-                            Add New User
+                            {{ $isEditMode ? 'Edit User' : 'Add New User' }}
                         </h5>
 
                         <button
@@ -566,11 +621,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('company_registration_number') is-invalid @enderror"
                                         wire:model="company_registration_number"
                                     >
 
                                 </div>
+
+                                @error('company_registration_number')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -593,43 +656,44 @@
 
                             </div>
 
-                            {{-- COUNTRY CODE --}}
-                            <div class="col-md-3 mb-4">
-
-                                <label class="form-label">
-                                    Country Code
-                                </label>
-
-                                <div class="input-group input-group-outline">
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        wire:model="phone_country_code"
-                                    >
-
-                                </div>
-
-                            </div>
 
                             {{-- PHONE --}}
-                            <div class="col-md-9 mb-4">
+                            <div class="col-md-12 mb-4">
 
                                 <label class="form-label">
                                     Phone Number
                                 </label>
 
-                                <div class="input-group input-group-outline">
+                                <div wire:ignore>
 
                                     <input
-                                        type="text"
+                                        id="phone"
+                                        type="tel"
                                         class="form-control"
-                                        wire:model="phone_number"
+                                        value="{{ $phone_number }}"
                                     >
 
                                 </div>
 
+                                @error('phone_number')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
+
+                                @error('phone_country_code')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
+
                             </div>
+
+
 
                             {{-- PERSONAL ADDRESS TITLE --}}
                             <div class="col-12 mt-3">
@@ -651,11 +715,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('personal_address') is-invalid @enderror"
                                         wire:model="personal_address"
                                     >
 
                                 </div>
+
+                                @error('personal_address')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -670,11 +742,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('personal_postal_code') is-invalid @enderror"
                                         wire:model="personal_postal_code"
                                     >
 
                                 </div>
+
+                                @error('personal_postal_code')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -689,11 +769,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('personal_city') is-invalid @enderror"
                                         wire:model="personal_city"
                                     >
 
                                 </div>
+
+                                @error('personal_city')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -708,13 +796,22 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('personal_country') is-invalid @enderror"
                                         wire:model="personal_country"
                                     >
 
                                 </div>
 
+                                @error('personal_country')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
+
                             </div>
+
 
                             {{-- BUSINESS ADDRESS TITLE --}}
                             <div class="col-12 mt-3">
@@ -736,11 +833,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('business_address') is-invalid @enderror"
                                         wire:model="business_address"
                                     >
 
                                 </div>
+
+                                @error('business_address')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -755,11 +860,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('business_postal_code') is-invalid @enderror"
                                         wire:model="business_postal_code"
                                     >
 
                                 </div>
+
+                                @error('business_postal_code')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -774,11 +887,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('business_city') is-invalid @enderror"
                                         wire:model="business_city"
                                     >
 
                                 </div>
+
+                                @error('business_city')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -793,11 +914,19 @@
 
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control @error('business_country') is-invalid @enderror"
                                         wire:model="business_country"
                                     >
 
                                 </div>
+
+                                @error('business_country')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
 
                             </div>
 
@@ -903,10 +1032,12 @@
 
                         <button
                             type="button"
-                            class="btn bg-gradient-warning"
+                            class="btn bg-gradient-warning dynamic-config-btn"
                             wire:click="saveUser"
                         >
-                            Create User
+
+                            {{ $isEditMode ? 'Update User' : 'Create User' }}
+
                         </button>
 
                     </div>

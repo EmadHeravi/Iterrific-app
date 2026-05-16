@@ -49,7 +49,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="email"
+                                        wire:model="email"
                                         type="email"
                                         class="form-control border"
                                         placeholder="your@email.com"
@@ -74,7 +74,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="password"
+                                        wire:model="password"
                                         type="password"
                                         class="form-control border"
                                         placeholder="New password"
@@ -99,7 +99,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="passwordConfirmation"
+                                        wire:model="passwordConfirmation"
                                         type="password"
                                         class="form-control border"
                                         placeholder="Confirm password"

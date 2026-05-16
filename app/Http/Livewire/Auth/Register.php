@@ -8,14 +8,16 @@ use Livewire\Component;
 class Register extends Component
 {
 
-    public $name ='';
+    public $first_name = '';
+    public $last_name = '';
     public $email = '';
     public $password = '';
 
     protected $rules=[
-    'name' => 'required|min:3',
+    'first_name' => 'required|min:3',
+    'last_name' => 'required|string|max:255',
     'email' => 'required|email|unique:users,email',
-    'password' => 'required|min:5',];
+    'password' => 'required|min:12',];
 
 
     public function store(){

@@ -44,7 +44,7 @@
                                     <div class="card">
                                         <div class="card-header mx-4 p-3 text-center">
                                             <div
-                                                class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+                                                class="icon icon-shape icon-lg bg-gradient-warning dynamic-config-gradient shadow text-center border-radius-lg">
                                                 <i class="material-icons opacity-10">account_balance</i>
                                             </div>
                                         </div>
@@ -60,7 +60,7 @@
                                     <div class="card">
                                         <div class="card-header mx-4 p-3 text-center">
                                             <div
-                                                class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+                                                class="icon icon-shape icon-lg bg-gradient-warning dynamic-config-gradient shadow text-center border-radius-lg">
                                                 <i class="material-icons opacity-10">account_balance_wallet</i>
                                             </div>
                                         </div>

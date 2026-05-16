@@ -65,6 +65,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets') }}/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css">
+    <link href="{{ asset('assets') }}/css/iterrific-dashboard.css" rel="stylesheet" />
     @livewireStyles
 </head>
 
@@ -91,6 +93,80 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets') }}/js/material-dashboard.js?v=3.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+    <script>
+
+        function initPhoneInput() {
+
+            const input = document.querySelector('#phone');
+
+            if (!input || input.classList.contains('iti-initialized')) {
+                return;
+            }
+
+            input.classList.add('iti-initialized');
+
+            const iti = window.intlTelInput(input, {
+
+                initialCountry: 'nl',
+
+                separateDialCode: true,
+
+                preferredCountries: [
+                    'nl',
+                    'be',
+                    'de',
+                    'fr',
+                    'gb'
+                ],
+
+                utilsScript:
+                    'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js'
+
+            });
+
+            function updatePhoneData() {
+
+                const countryData = iti.getSelectedCountryData();
+
+                const wireId = input.closest('[wire\\:id]').getAttribute('wire:id');
+
+                Livewire.find(wireId).set(
+                    'phone_country_code',
+                    '+' + countryData.dialCode
+                );
+
+                Livewire.find(wireId).set(
+                    'phone_number',
+                    input.value
+                );
+
+            }
+
+            input.addEventListener('countrychange', updatePhoneData);
+
+            input.addEventListener('input', updatePhoneData);
+
+            updatePhoneData();
+
+        }
+
+        document.addEventListener('livewire:initialized', () => {
+
+            initPhoneInput();
+
+            Livewire.hook('morph.updated', () => {
+
+                setTimeout(() => {
+                    initPhoneInput();
+                }, 100);
+
+            });
+
+        });
+
+    </script>
+
     @livewireScripts
 </body>
 

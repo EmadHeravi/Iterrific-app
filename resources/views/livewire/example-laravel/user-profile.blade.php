@@ -1,7 +1,7 @@
 <div class="container-fluid px-2 px-md-4">
     <div class="page-header min-height-300 border-radius-xl mt-4"
         style="background-image: url('https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');">
-        <span class="mask  bg-gradient-primary  opacity-6"></span>
+        <span class="mask bg-gradient-warning opacity-4 dynamic-config-gradient"></span>
     </div>
     <div class="card card-body mx-3 mx-md-4 mt-n6">
         <div class="row gx-4 mb-2">
@@ -14,7 +14,7 @@
             <div class="col-auto my-auto">
                 <div class="h-100">
                     <h5 class="mb-1">
-                        {{ auth()->user()->name }}
+                        {{ auth()->user()->full_name }}
                     </h5>
                     <p class="mb-0 font-weight-normal text-sm">
                         CEO / Co-Founder
@@ -86,35 +86,62 @@
                         <div class="mb-3 col-md-6">
 
                             <label class="form-label">Email address</label>
-                            <input wire:model.blur="user.email" type="email" class="form-control border border-2 p-2">
-                            @error('user.email')
+                            <input wire:model.blur="email" type="email" class="form-control border border-2 p-2">
+                            @error('email')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
 
                         <div class="mb-3 col-md-6">
 
-                            <label class="form-label">Name</label>
-                            <input wire:model.blur="user.name" type="text" class="form-control border border-2 p-2">
-                            @error('user.name')
+                            <label class="form-label">First Name</label>
+                            <input wire:model.blur="first_name" type="text" class="form-control border border-2 p-2">
+                            @error('first_name')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
 
                         <div class="mb-3 col-md-6">
 
-                            <label class="form-label">Phone</label>
-                            <input wire:model.blur="user.phone" type="number" class="form-control border border-2 p-2">
-                            @error('user.phone')
+                            <label class="form-label">Last Name</label>
+                            <input wire:model.blur="last_name" type="text" class="form-control border border-2 p-2">
+                            @error('last_name')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
 
                         <div class="mb-3 col-md-6">
 
-                            <label class="form-label">Location</label>
-                            <input wire:model.blur="user.location" type="text" class="form-control border border-2 p-2">
-                            @error('user.location')
+                            <label class="form-label">Phone Country Code</label>
+                            <input wire:model.blur="phone_country_code" type="text" class="form-control border border-2 p-2">
+                            @error('phone_country_code')
+                            <p class='text-danger inputerror'>{{ $message }} </p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+
+                            <label class="form-label">Phone Number</label>
+                            <input wire:model.blur="phone_number" type="text" class="form-control border border-2 p-2">
+                            @error('phone_number')
+                            <p class='text-danger inputerror'>{{ $message }} </p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+
+                            <label class="form-label">City</label>
+                            <input wire:model.blur="personal_city" type="text" class="form-control border border-2 p-2">
+                            @error('personal_city')
+                            <p class='text-danger inputerror'>{{ $message }} </p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+
+                            <label class="form-label">Country</label>
+                            <input wire:model.blur="personal_country" type="text" class="form-control border border-2 p-2">
+                            @error('personal_country')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
@@ -122,10 +149,10 @@
                         <div class="mb-3 col-md-12">
 
                             <label for="floatingTextarea2">About</label>
-                            <textarea wire:model.blur="user.about" class="form-control border border-2 p-2"
+                            <textarea wire:model.blur="about" class="form-control border border-2 p-2"
                                 placeholder=" Say something about yourself" id="floatingTextarea2" rows="4"
                                 cols="50"></textarea>
-                            @error('user.about')
+                            @error('about')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>

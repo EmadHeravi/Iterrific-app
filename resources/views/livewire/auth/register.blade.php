@@ -25,18 +25,40 @@
                                 <div class="mb-3">
 
                                     <label class="form-label">
-                                        Full Name
+                                        First Name
                                     </label>
 
                                     <input
-                                        wire:model.defer="name"
+                                        wire:model="first_name"
                                         type="text"
                                         class="form-control border"
-                                        placeholder="John Doe"
+                                        placeholder="John"
                                         required
                                     >
 
-                                    @error('name')
+                                    @error('first_name')
+                                        <small class="text-danger">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+
+                                </div>
+
+                                <div class="mb-3">
+
+                                    <label class="form-label">
+                                        Last Name
+                                    </label>
+
+                                    <input
+                                        wire:model="last_name"
+                                        type="text"
+                                        class="form-control border"
+                                        placeholder="Doe"
+                                        required
+                                    >
+
+                                    @error('last_name')
                                         <small class="text-danger">
                                             {{ $message }}
                                         </small>
@@ -52,7 +74,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="email"
+                                        wire:model="email"
                                         type="email"
                                         class="form-control border"
                                         placeholder="your@email.com"
@@ -75,7 +97,7 @@
                                     </label>
 
                                     <input
-                                        wire:model.defer="password"
+                                        wire:model="password"
                                         type="password"
                                         class="form-control border"
                                         placeholder="Password"

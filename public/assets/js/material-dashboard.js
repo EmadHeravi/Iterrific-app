@@ -120,10 +120,74 @@ if (document.querySelector('.fixed-plugin')) {
 
 }
 
+var dashboardConfigColors = [
+  'primary',
+  'dark',
+  'info',
+  'success',
+  'warning',
+  'danger'
+];
+
+function applyDashboardConfigColor(color) {
+  document.querySelectorAll('.dynamic-config-btn, .dynamic-config-gradient').forEach((element) => {
+    dashboardConfigColors.forEach((configurableColor) => {
+      element.classList.remove('bg-gradient-' + configurableColor);
+    });
+
+    element.classList.add('bg-gradient-' + color);
+  });
+
+  document.querySelectorAll('.dynamic-config-shadow').forEach((element) => {
+    dashboardConfigColors.forEach((configurableColor) => {
+      element.classList.remove('shadow-' + configurableColor);
+    });
+
+    element.classList.add('shadow-' + color);
+  });
+
+  document.querySelectorAll('.dynamic-config-text').forEach((element) => {
+    dashboardConfigColors.forEach((configurableColor) => {
+      element.classList.remove('text-' + configurableColor);
+    });
+
+    element.classList.add('text-' + color);
+  });
+}
+
+function currentDashboardConfigColor() {
+  var activeBadge = document.querySelector('.fixed-plugin .background-color .badge.active');
+
+  if (activeBadge) {
+    return activeBadge.getAttribute('data-color');
+  }
+
+  return 'warning';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  applyDashboardConfigColor(currentDashboardConfigColor());
+});
+
+document.addEventListener('livewire:initialized', function() {
+  if (window.Livewire) {
+    Livewire.hook('morph.updated', function() {
+      setTimeout(function() {
+        applyDashboardConfigColor(currentDashboardConfigColor());
+      }, 0);
+    });
+  }
+});
+
 //Set Sidebar Color
 function sidebarColor(a) {
   var parent = document.querySelector(".nav-link.active");
   var color = a.getAttribute("data-color");
+
+  document.querySelectorAll('.fixed-plugin .background-color .badge').forEach((badge) => {
+    badge.classList.remove('active');
+  });
+  a.classList.add('active');
 
   if (parent.classList.contains('bg-gradient-primary')) {
     parent.classList.remove('bg-gradient-primary');
@@ -145,20 +209,7 @@ function sidebarColor(a) {
   }
   parent.classList.add('bg-gradient-' + color);
   console.log('Configurator color:', color);
-  document.querySelectorAll('.dynamic-config-btn').forEach((btn) => {
-
-    btn.classList.remove(
-      'bg-gradient-primary',
-      'bg-gradient-dark',
-      'bg-gradient-info',
-      'bg-gradient-success',
-      'bg-gradient-warning',
-      'bg-gradient-danger'
-    );
-
-    btn.classList.add('bg-gradient-' + color);
-
-  }); 
+  applyDashboardConfigColor(color);
 }
 
 // Set Sidebar Type
