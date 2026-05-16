@@ -411,6 +411,22 @@ class UserManagement extends Component
         $this->closeUserModal();
     }
 
+    public function deleteUser($id)
+    {
+        $this->authorizeWrite();
+
+        if ((int) $id === auth()->id()) {
+            $this->addError('delete_user', 'You cannot delete your own account while signed in.');
+
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        $user->projects()->detach();
+        $user->delete();
+    }
+
     private function rulesForSave()
     {
         return [

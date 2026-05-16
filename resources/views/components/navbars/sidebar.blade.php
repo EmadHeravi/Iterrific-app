@@ -18,7 +18,7 @@
         >
 
             <img
-                src="{{ asset('assets/img/logo.png') }}"
+                src="{{ asset('assets/img/Logo.png') }}"
                 class="navbar-brand-img h-100"
                 alt="ITerrific Logo"
             >

@@ -78,6 +78,12 @@
 
                     @if($activeTab === 'accounts')
 
+                    @error('delete_user')
+                        <div class="alert alert-danger text-white text-sm" role="alert">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 
                         <div>
@@ -322,6 +328,9 @@
                                                     <button
                                                         type="button"
                                                         class="btn btn-link text-danger px-2 mb-0"
+                                                        wire:click="deleteUser({{ $user->id }})"
+                                                        wire:confirm="Are you sure you want to delete this user?"
+                                                        @if($user->id === auth()->id()) disabled @endif
                                                     >
 
                                                         <i class="material-icons">
