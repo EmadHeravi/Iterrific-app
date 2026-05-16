@@ -8,6 +8,7 @@ use App\Http\Livewire\Billing;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Dashboard;
 use App\Http\Livewire\ExampleLaravel\UserManagement;
+use App\Http\Livewire\ExampleLaravel\Projects;
 use App\Http\Livewire\ExampleLaravel\UserProfile;
 use App\Http\Livewire\Notifications;
 use App\Http\Livewire\Profile;
@@ -62,19 +63,20 @@ Route::post('/logout', function () {
 })->middleware('auth')->name('logout');
 
 
-Route::get('user-profile', UserProfile::class)->middleware('auth')->name('user-profile');
-Route::get('user-management', UserManagement::class)->middleware('auth')->name('user-management');
+Route::get('user-profile', UserProfile::class)->middleware(['auth', 'permission:user-profile'])->name('user-profile');
+Route::get('user-management', UserManagement::class)->middleware(['auth', 'permission:user-management'])->name('user-management');
+Route::get('projects', Projects::class)->middleware(['auth', 'permission:projects'])->name('projects');
 
 Route::group(['middleware' => 'auth'], function () {
-Route::get('dashboard', Dashboard::class)->name('dashboard');
-Route::get('billing', Billing::class)->name('billing');
-Route::get('profile', Profile::class)->name('profile');
-Route::get('tables', Tables::class)->name('tables');
-Route::get('notifications', Notifications::class)->name("notifications");
-Route::get('virtual-reality', VirtualReality::class)->name('virtual-reality');
+Route::get('dashboard', Dashboard::class)->middleware('permission:dashboard')->name('dashboard');
+Route::get('billing', Billing::class)->middleware('permission:billing')->name('billing');
+Route::get('profile', Profile::class)->middleware('permission:profile')->name('profile');
+Route::get('tables', Tables::class)->middleware('permission:tables')->name('tables');
+Route::get('notifications', Notifications::class)->middleware('permission:notifications')->name("notifications");
+Route::get('virtual-reality', VirtualReality::class)->middleware('permission:virtual-reality')->name('virtual-reality');
 Route::get('static-sign-in', StaticSignIn::class)->name('static-sign-in');
 Route::get('static-sign-up', StaticSignUp::class)->name('static-sign-up');
-Route::get('rtl', RTL::class)->name('rtl');
+Route::get('rtl', RTL::class)->middleware('permission:rtl')->name('rtl');
 });
 
 Route::get('/401', fn () => abort(401));

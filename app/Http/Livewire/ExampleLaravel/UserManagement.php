@@ -3,10 +3,16 @@
 namespace App\Http\Livewire\ExampleLaravel;
 
 use Livewire\Component;
+use App\Models\Role;
 use App\Models\User;
+use App\Support\AppPermissions;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UserManagement extends Component
 {
+    public $activeTab = 'accounts';
+
     /*
     |--------------------------------------------------------------------------
     | MODAL
@@ -55,6 +61,24 @@ class UserManagement extends Component
     public $phone_number;
 
     public $about;
+
+    public $showRoleModal = false;
+    public $roleIdBeingEdited = null;
+    public $isRoleEditMode = false;
+    public $role_name = '';
+    public $role_slug = '';
+    public $role_description = '';
+    public $role_permissions = [];
+
+    public function showAccountsTab()
+    {
+        $this->activeTab = 'accounts';
+    }
+
+    public function showRolesTab()
+    {
+        $this->activeTab = 'roles';
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -158,12 +182,14 @@ class UserManagement extends Component
 
     public function openUserModal()
     {
+        $this->authorizeWrite();
         $this->resetUserForm();
         $this->showUserModal = true;
     }
 
     public function editUser($id)
     {
+        $this->authorizeWrite();
         $user = User::findOrFail($id);
 
         $this->userIdBeingEdited = $user->id;
@@ -262,6 +288,8 @@ class UserManagement extends Component
 
     public function saveUser()
     {
+        $this->authorizeWrite();
+
         if ($this->isEditMode && $this->password === '') {
             $this->password = null;
         }
@@ -397,7 +425,7 @@ class UserManagement extends Component
 
             'password' => $this->isEditMode ? 'nullable|min:12' : 'required|min:12',
 
-            'role' => 'required|in:administrator,manager,member',
+            'role' => 'required|exists:roles,slug',
 
             'user_type' => 'required|in:internal,external',
 
@@ -440,6 +468,132 @@ class UserManagement extends Component
         ];
     }
 
+    public function openRoleModal()
+    {
+        $this->authorizeWrite();
+        $this->resetRoleForm();
+        $this->role_permissions = $this->blankPermissions();
+        $this->showRoleModal = true;
+    }
+
+    public function editRole($id)
+    {
+        $this->authorizeWrite();
+
+        $role = Role::with('permissions')->findOrFail($id);
+
+        $this->roleIdBeingEdited = $role->id;
+        $this->isRoleEditMode = true;
+        $this->role_name = $role->name;
+        $this->role_slug = $role->slug;
+        $this->role_description = $role->description;
+        $this->role_permissions = $this->blankPermissions();
+
+        foreach ($role->permissions as $permission) {
+            $this->role_permissions[$permission->module] = [
+                'read' => (bool) $permission->can_read,
+                'write' => (bool) $permission->can_write,
+            ];
+        }
+
+        $this->showRoleModal = true;
+    }
+
+    public function closeRoleModal()
+    {
+        $this->showRoleModal = false;
+        $this->resetRoleForm();
+    }
+
+    public function saveRole()
+    {
+        $this->authorizeWrite();
+
+        if (! $this->isRoleEditMode) {
+            $this->role_slug = Str::slug($this->role_slug ?: $this->role_name);
+        }
+
+        $validated = $this->validate([
+            'role_name' => 'required|string|max:255',
+            'role_slug' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-z0-9-]+$/',
+                Rule::unique('roles', 'slug')->ignore($this->roleIdBeingEdited),
+            ],
+            'role_description' => 'nullable|string|max:1000',
+            'role_permissions' => 'array',
+        ]);
+
+        $role = Role::updateOrCreate(
+            ['id' => $this->roleIdBeingEdited],
+            [
+                'name' => $validated['role_name'],
+                'slug' => $validated['role_slug'],
+                'description' => $validated['role_description'],
+            ]
+        );
+
+        foreach (AppPermissions::modules() as $module => $label) {
+            $canRead = (bool) ($this->role_permissions[$module]['read'] ?? false);
+            $canWrite = (bool) ($this->role_permissions[$module]['write'] ?? false);
+
+            $role->permissions()->updateOrCreate(
+                ['module' => $module],
+                [
+                    'can_read' => $canRead || $canWrite,
+                    'can_write' => $canWrite,
+                ]
+            );
+        }
+
+        $this->closeRoleModal();
+    }
+
+    public function deleteRole($id)
+    {
+        $this->authorizeWrite();
+
+        $role = Role::withCount('users')->findOrFail($id);
+
+        if ($role->is_system || $role->users_count > 0) {
+            return;
+        }
+
+        $role->delete();
+    }
+
+    private function resetRoleForm()
+    {
+        $this->reset([
+            'role_name',
+            'role_slug',
+            'role_description',
+            'role_permissions',
+        ]);
+
+        $this->roleIdBeingEdited = null;
+        $this->isRoleEditMode = false;
+    }
+
+    private function blankPermissions()
+    {
+        return collect(AppPermissions::modules())
+            ->mapWithKeys(fn ($label, $module) => [
+                $module => [
+                    'read' => false,
+                    'write' => false,
+                ],
+            ])
+            ->toArray();
+    }
+
+    private function authorizeWrite()
+    {
+        abort_unless(auth()->user()->canWrite('user-management'), 403);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | RENDER
@@ -451,6 +605,14 @@ class UserManagement extends Component
         return view('livewire.example-laravel.user-management', [
 
             'users' => User::latest()->get()
+            ,
+            'roles' => Role::with(['permissions'])
+                ->withCount('users')
+                ->orderBy('name')
+                ->get(),
+            'roleOptions' => Role::orderBy('name')->get(),
+            'permissionModules' => AppPermissions::modules(),
+            'canWriteUserManagement' => auth()->user()->canWrite('user-management'),
 
         ]);
     }

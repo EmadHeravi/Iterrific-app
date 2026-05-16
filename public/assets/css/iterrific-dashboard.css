@@ -66,3 +66,30 @@ div.iti .iti__flag-container {
 .user-management-card .table th {
     vertical-align: middle;
 }
+
+.navbar-vertical.navbar-expand-xs .navbar-nav .settings-sub-item {
+    margin-left: 1.25rem;
+    margin-right: 0.75rem;
+    width: auto;
+}
+
+.navbar-vertical.navbar-expand-xs .navbar-nav .settings-sub-item .settings-sub-link {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.75rem !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.navbar-vertical.navbar-expand-xs .navbar-nav .settings-sub-item .settings-sub-link::before {
+    content: "";
+    width: 1px;
+    height: 1.5rem;
+    background: #d2d6da;
+    margin-right: 0.65rem;
+}
+
+.settings-sub-icon {
+    width: 1.5rem;
+    min-width: 1.5rem;
+}

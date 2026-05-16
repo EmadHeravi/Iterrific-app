@@ -151,4 +151,53 @@ class User extends Authenticatable
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class)
+            ->withPivot('active')
+            ->withTimestamps();
+    }
+
+    public function roleDefinition()
+    {
+        return $this->belongsTo(Role::class, 'role', 'slug');
+    }
+
+    public function canRead(string $module): bool
+    {
+        return $this->hasPermission($module, 'read');
+    }
+
+    public function canWrite(string $module): bool
+    {
+        return $this->hasPermission($module, 'write');
+    }
+
+    private function hasPermission(string $module, string $action): bool
+    {
+        if ($this->role === 'administrator') {
+            return true;
+        }
+
+        $role = $this->roleDefinition()
+            ->with('permissions')
+            ->first();
+
+        if (! $role) {
+            return false;
+        }
+
+        $permission = $role->permissions
+            ->firstWhere('module', $module);
+
+        if (! $permission) {
+            return false;
+        }
+
+        return $action === 'write'
+            ? $permission->can_write
+            : $permission->can_read;
+    }
+
 }

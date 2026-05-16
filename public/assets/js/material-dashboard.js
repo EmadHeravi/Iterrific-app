@@ -129,7 +129,19 @@ var dashboardConfigColors = [
   'danger'
 ];
 
+var dashboardConfigColorValues = {
+  primary: '#e91e63',
+  secondary: '#7b809a',
+  dark: '#344767',
+  info: '#1A73E8',
+  success: '#4CAF50',
+  warning: '#fb8c00',
+  danger: '#F44335'
+};
+
 function applyDashboardConfigColor(color) {
+  document.documentElement.style.setProperty('--dashboard-config-color', dashboardConfigColorValues[color] || dashboardConfigColorValues.warning);
+
   document.querySelectorAll('.dynamic-config-btn, .dynamic-config-gradient').forEach((element) => {
     dashboardConfigColors.forEach((configurableColor) => {
       element.classList.remove('bg-gradient-' + configurableColor);

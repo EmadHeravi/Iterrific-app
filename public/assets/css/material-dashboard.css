@@ -17608,4 +17608,18 @@ pre[class*="language-"] {
     color: #344767 !important;
 }
 
+.form-check:not(.form-switch) .form-check-input.dynamic-config-checkbox:checked {
+    background: var(--dashboard-config-color, #fb8c00) !important;
+    border-color: var(--dashboard-config-color, #fb8c00) !important;
+}
+
+.form-check:not(.form-switch) .form-check-input.dynamic-config-checkbox[type="checkbox"]:checked {
+    background: var(--dashboard-config-color, #fb8c00) !important;
+}
+
+.form-check:not(.form-switch) .form-check-input.dynamic-config-checkbox[type="checkbox"]:indeterminate {
+    background-color: var(--dashboard-config-color, #fb8c00) !important;
+    border-color: var(--dashboard-config-color, #fb8c00) !important;
+}
+
 /*# sourceMappingURL=material-dashboard.css.map */

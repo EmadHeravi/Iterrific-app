@@ -39,7 +39,12 @@
                             <div class="nav-wrapper position-relative end-0">
                                 <ul class="nav nav-pills nav-fill p-1" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1 active" href="javascript:;" role="tab">
+                                        <a
+                                            class="nav-link mb-0 px-0 py-1 {{ $activeTab === 'accounts' ? 'active' : '' }}"
+                                            href="javascript:;"
+                                            role="tab"
+                                            wire:click="showAccountsTab"
+                                        >
                                             <i class="material-icons text-lg position-relative">
                                                 manage_accounts
                                             </i>
@@ -49,7 +54,12 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1" href="javascript:;" role="tab">
+                                        <a
+                                            class="nav-link mb-0 px-0 py-1 {{ $activeTab === 'roles' ? 'active' : '' }}"
+                                            href="javascript:;"
+                                            role="tab"
+                                            wire:click="showRolesTab"
+                                        >
                                             <i class="material-icons text-lg position-relative">
                                                 admin_panel_settings
                                             </i>
@@ -66,6 +76,8 @@
 
                     <hr class="horizontal gray-light my-3">
 
+                    @if($activeTab === 'accounts')
+
                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 
                         <div>
@@ -77,18 +89,20 @@
                             </p>
                         </div>
 
-                        <button
-                            wire:click="openUserModal"
-                            class="btn bg-gradient-warning dynamic-config-btn mb-0"
-                        >
+                        @if($canWriteUserManagement)
+                            <button
+                                wire:click="openUserModal"
+                                class="btn bg-gradient-warning dynamic-config-btn mb-0"
+                            >
 
-                            <i class="material-icons text-sm">
-                                add
-                            </i>
+                                <i class="material-icons text-sm">
+                                    add
+                                </i>
 
-                            &nbsp;&nbsp;Add New User
+                                &nbsp;&nbsp;Add New User
 
-                        </button>
+                            </button>
+                        @endif
 
                     </div>
 
@@ -199,8 +213,16 @@
 
                                             {{-- ROLE --}}
                                             <td class="align-middle text-center text-sm">
+                                                @php
+                                                    $roleBadgeClass = match ($user->role) {
+                                                        'administrator' => 'bg-gradient-danger',
+                                                        'manager' => 'bg-gradient-warning',
+                                                        'member' => 'bg-gradient-success',
+                                                        default => 'bg-gradient-dark',
+                                                    };
+                                                @endphp
 
-                                                <span class="badge badge-sm bg-gradient-info">
+                                                <span class="badge badge-sm {{ $roleBadgeClass }}">
 
                                                     {{ ucfirst($user->role) }}
 
@@ -210,8 +232,13 @@
 
                                             {{-- USER TYPE --}}
                                             <td class="align-middle text-center text-sm">
+                                                @php
+                                                    $userTypeBadgeClass = $user->user_type === 'internal'
+                                                        ? 'bg-gradient-success'
+                                                        : 'bg-gradient-secondary';
+                                                @endphp
 
-                                                <span class="badge badge-sm bg-gradient-secondary">
+                                                <span class="badge badge-sm {{ $userTypeBadgeClass }}">
 
                                                     {{ ucfirst($user->user_type) }}
 
@@ -279,28 +306,30 @@
                                             {{-- ACTIONS --}}
                                             <td class="align-middle">
 
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-link text-warning dynamic-config-text px-2 mb-0"
-                                                    wire:click="editUser({{ $user->id }})"
-                                                >
+                                                @if($canWriteUserManagement)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-link text-warning dynamic-config-text px-2 mb-0"
+                                                        wire:click="editUser({{ $user->id }})"
+                                                    >
 
-                                                    <i class="material-icons">
-                                                        edit
-                                                    </i>
+                                                        <i class="material-icons">
+                                                            edit
+                                                        </i>
 
-                                                </button>
+                                                    </button>
 
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-link text-danger px-2 mb-0"
-                                                >
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-link text-danger px-2 mb-0"
+                                                    >
 
-                                                    <i class="material-icons">
-                                                        delete
-                                                    </i>
+                                                        <i class="material-icons">
+                                                            delete
+                                                        </i>
 
-                                                </button>
+                                                    </button>
+                                                @endif
 
                                             </td>
 
@@ -329,6 +358,120 @@
                         </div>
 
                     </div>
+
+                    @else
+
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+
+                        <div>
+                            <h6 class="mb-1">
+                                Role Permissions
+                            </h6>
+                            <p class="text-sm text-secondary mb-0">
+                                Define read and write access for each app section.
+                            </p>
+                        </div>
+
+                        @if($canWriteUserManagement)
+                            <button
+                                wire:click="openRoleModal"
+                                class="btn bg-gradient-warning dynamic-config-btn mb-0"
+                            >
+                                <i class="material-icons text-sm">
+                                    add
+                                </i>
+                                &nbsp;&nbsp;Add Role
+                            </button>
+                        @endif
+
+                    </div>
+
+                    <div class="card-body px-0 pb-2 pt-3">
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Role
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Users
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Permissions
+                                        </th>
+                                        <th class="text-secondary opacity-7"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($roles as $role)
+                                        <tr>
+                                            <td>
+                                                <div class="px-3 py-2">
+                                                    <h6 class="text-sm mb-0">
+                                                        {{ $role->name }}
+                                                    </h6>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $role->slug }}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="px-3 py-2">
+                                                    <p class="text-sm mb-0">
+                                                        {{ $role->users_count }}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="px-3 py-2">
+                                                    <p class="text-sm mb-0">
+                                                        {{ $role->permissions->where('can_read', true)->count() }} read /
+                                                        {{ $role->permissions->where('can_write', true)->count() }} write
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-end pe-3">
+                                                @if($canWriteUserManagement)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-link text-warning dynamic-config-text px-2 mb-0"
+                                                        wire:click="editRole({{ $role->id }})"
+                                                    >
+                                                        <i class="material-icons">
+                                                            edit
+                                                        </i>
+                                                    </button>
+
+                                                    @if(! $role->is_system && $role->users_count === 0)
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-link text-danger px-2 mb-0"
+                                                            wire:click="deleteRole({{ $role->id }})"
+                                                        >
+                                                            <i class="material-icons">
+                                                                delete
+                                                            </i>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <span class="text-secondary">
+                                                    No roles found.
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    @endif
 
                 </div>
 
@@ -494,17 +637,11 @@
                                         wire:model="role"
                                     >
 
-                                        <option value="administrator">
-                                            Administrator
-                                        </option>
-
-                                        <option value="manager">
-                                            Manager
-                                        </option>
-
-                                        <option value="member">
-                                            Member
-                                        </option>
+                                        @foreach($roleOptions as $roleOption)
+                                            <option value="{{ $roleOption->slug }}">
+                                                {{ $roleOption->name }}
+                                            </option>
+                                        @endforeach
 
                                     </select>
 
@@ -1046,6 +1183,167 @@
 
             </div>
 
+        </div>
+
+    @endif
+
+    @if($showRoleModal)
+
+        <div
+            wire:ignore.self
+            class="modal fade show d-block"
+            tabindex="-1"
+            style="background: rgba(0,0,0,0.5);"
+        >
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            {{ $isRoleEditMode ? 'Edit Role' : 'Add Role' }}
+                        </h5>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            wire:click="closeRoleModal"
+                        ></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label class="form-label">
+                                    Role Name
+                                </label>
+                                <div class="input-group input-group-outline">
+                                    <input
+                                        type="text"
+                                        class="form-control @error('role_name') is-invalid @enderror"
+                                        wire:model="role_name"
+                                    >
+                                </div>
+                                @error('role_name')
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+                                <label class="form-label">
+                                    Role Slug
+                                </label>
+                                <div class="input-group input-group-outline">
+                                    <input
+                                        type="text"
+                                        class="form-control @error('role_slug') is-invalid @enderror"
+                                        wire:model="role_slug"
+                                        @if($isRoleEditMode) readonly @endif
+                                    >
+                                </div>
+                                @error('role_slug')
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+                                <label class="form-label">
+                                    Description
+                                </label>
+                                <div class="input-group input-group-outline">
+                                    <input
+                                        type="text"
+                                        class="form-control @error('role_description') is-invalid @enderror"
+                                        wire:model="role_description"
+                                    >
+                                </div>
+                                @error('role_description')
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+
+                            <div class="col-12">
+                                <h6 class="mb-3">
+                                    App Permissions
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table align-items-center">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Section
+                                                </th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                    Read
+                                                </th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                    Write
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($permissionModules as $module => $label)
+                                                <tr>
+                                                    <td>
+                                                        <div class="px-3 py-2">
+                                                            <h6 class="text-sm mb-0">
+                                                                {{ $label }}
+                                                            </h6>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $module }}
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <div class="form-check d-inline-block">
+                                                            <input
+                                                                class="form-check-input dynamic-config-checkbox"
+                                                                type="checkbox"
+                                                                wire:model="role_permissions.{{ $module }}.read"
+                                                            >
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <div class="form-check d-inline-block">
+                                                            <input
+                                                                class="form-check-input dynamic-config-checkbox"
+                                                                type="checkbox"
+                                                                wire:model="role_permissions.{{ $module }}.write"
+                                                            >
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            wire:click="closeRoleModal"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn bg-gradient-warning dynamic-config-btn"
+                            wire:click="saveRole"
+                        >
+                            {{ $isRoleEditMode ? 'Update Role' : 'Create Role' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     @endif

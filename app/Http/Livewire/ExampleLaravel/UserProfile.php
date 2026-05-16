@@ -50,6 +50,8 @@ class UserProfile extends Component
     
     public function update()
     {
+        abort_unless(auth()->user()->canWrite('user-profile'), 403);
+
         $this->validate();
 
         if (env('IS_DEMO') && $this->user->id == 1){

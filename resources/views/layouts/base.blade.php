@@ -96,7 +96,21 @@
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
     <script>
 
-        function initPhoneInput() {
+        const phoneInputOptions = {
+            initialCountry: 'nl',
+            separateDialCode: true,
+            preferredCountries: [
+                'nl',
+                'be',
+                'de',
+                'fr',
+                'gb'
+            ],
+            utilsScript:
+                'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js'
+        };
+
+        function initUserPhoneInput() {
 
             const input = document.querySelector('#phone');
 
@@ -106,24 +120,7 @@
 
             input.classList.add('iti-initialized');
 
-            const iti = window.intlTelInput(input, {
-
-                initialCountry: 'nl',
-
-                separateDialCode: true,
-
-                preferredCountries: [
-                    'nl',
-                    'be',
-                    'de',
-                    'fr',
-                    'gb'
-                ],
-
-                utilsScript:
-                    'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js'
-
-            });
+            const iti = window.intlTelInput(input, phoneInputOptions);
 
             function updatePhoneData() {
 
@@ -151,14 +148,60 @@
 
         }
 
+        function initProjectPhoneInputs() {
+
+            document.querySelectorAll('[data-project-phone-input]').forEach((input) => {
+
+                if (input.classList.contains('iti-initialized')) {
+                    return;
+                }
+
+                input.classList.add('iti-initialized');
+
+                const iti = window.intlTelInput(input, phoneInputOptions);
+
+                function updateProjectPhoneData() {
+
+                    const wireElement = input.closest('[wire\\:id]');
+                    const property = input.getAttribute('data-phone-property');
+
+                    if (!wireElement || !property) {
+                        return;
+                    }
+
+                    const wire = Livewire.find(wireElement.getAttribute('wire:id'));
+                    const phoneValue = iti.getNumber() || input.value;
+
+                    wire.set(property, phoneValue);
+
+                }
+
+                input.addEventListener('countrychange', updateProjectPhoneData);
+
+                input.addEventListener('input', updateProjectPhoneData);
+
+                updateProjectPhoneData();
+
+            });
+
+        }
+
+        function initPhoneInputs() {
+
+            initUserPhoneInput();
+
+            initProjectPhoneInputs();
+
+        }
+
         document.addEventListener('livewire:initialized', () => {
 
-            initPhoneInput();
+            initPhoneInputs();
 
             Livewire.hook('morph.updated', () => {
 
                 setTimeout(() => {
-                    initPhoneInput();
+                    initPhoneInputs();
                 }, 100);
 
             });

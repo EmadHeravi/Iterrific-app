@@ -56,6 +56,7 @@
             @endphp
 
             @foreach($menuItems as [$route, $icon, $label])
+                @continue(! auth()->user()->canRead($route))
 
                 <li class="nav-item">
 
@@ -82,30 +83,35 @@
 
             @endforeach
 
+            @if(auth()->user()->canRead('user-management') || auth()->user()->canRead('projects'))
             {{-- LARAVEL EXAMPLES --}}
             <li class="nav-item mt-3">
 
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8 d-flex align-items-center">
+                    <i class="material-icons opacity-10 me-2" style="font-size: 1rem;">
+                        settings
+                    </i>
                     Settings
                 </h6>
 
             </li>
+            @endif
 
 
             {{-- USER MANAGEMENT --}}
-            <li class="nav-item">
+            @if(auth()->user()->canRead('user-management'))
+            <li class="nav-item settings-sub-item">
 
                 <a
-                    class="nav-link text-dark {{ Route::currentRouteName() == 'user-management' ? 'active bg-gradient-warning text-white' : '' }}"
+                    class="nav-link text-dark settings-sub-link {{ Route::currentRouteName() == 'user-management' ? 'active bg-gradient-warning text-white' : '' }}"
                     href="{{ route('user-management') }}"
                 >
 
-                    <div class="text-center me-2 d-flex align-items-center justify-content-center">
+                    <div class="settings-sub-icon text-center me-2 d-flex align-items-center justify-content-center">
 
-                        <i
-                            style="font-size: 1rem;"
-                            class="fas fa-lg fa-list-ul ps-2 pe-2 text-center"
-                        ></i>
+                        <i class="material-icons opacity-10">
+                            manage_accounts
+                        </i>
 
                     </div>
 
@@ -116,31 +122,63 @@
                 </a>
 
             </li>
+            @endif
+
+            {{-- PROJECTS --}}
+            @if(auth()->user()->canRead('projects'))
+            <li class="nav-item settings-sub-item">
+
+                <a
+                    class="nav-link text-dark settings-sub-link {{ Route::currentRouteName() == 'projects' ? 'active bg-gradient-warning text-white' : '' }}"
+                    href="{{ route('projects') }}"
+                >
+
+                    <div class="settings-sub-icon text-center me-2 d-flex align-items-center justify-content-center">
+
+                        <i class="material-icons opacity-10">
+                            work
+                        </i>
+
+                    </div>
+
+                    <span class="nav-link-text ms-1">
+                        Projects
+                    </span>
+
+                </a>
+
+            </li>
+            @endif
 
             {{-- ACCOUNT --}}
+            @if(auth()->user()->canRead('user-profile'))
             <li class="nav-item mt-3">
 
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8 d-flex align-items-center">
+                    <i class="material-icons opacity-10 me-2" style="font-size: 1rem;">
+                        account_circle
+                    </i>
                     Account
                 </h6>
 
             </li>
+            @endif
 
             {{-- LOGOUT --}}
                         {{-- USER PROFILE --}}
-            <li class="nav-item">
+            @if(auth()->user()->canRead('user-profile'))
+            <li class="nav-item settings-sub-item">
 
                 <a
-                    class="nav-link text-dark {{ Route::currentRouteName() == 'user-profile' ? 'active bg-gradient-warning text-white' : '' }}"
+                    class="nav-link text-dark settings-sub-link {{ Route::currentRouteName() == 'user-profile' ? 'active bg-gradient-warning text-white' : '' }}"
                     href="{{ route('user-profile') }}"
                 >
 
-                    <div class="text-center me-2 d-flex align-items-center justify-content-center">
+                    <div class="settings-sub-icon text-center me-2 d-flex align-items-center justify-content-center">
 
-                        <i
-                            style="font-size: 1.2rem;"
-                            class="fas fa-user-circle ps-2 pe-2 text-center"
-                        ></i>
+                        <i class="material-icons opacity-10">
+                            account_circle
+                        </i>
 
                     </div>
 
@@ -151,6 +189,7 @@
                 </a>
 
             </li>
+            @endif
             <li class="nav-item">
 
                 <form method="POST" action="{{ route('logout') }}">

@@ -157,7 +157,11 @@
                             @enderror
                         </div>
                     </div>
-                    <button type="submit" class="btn bg-gradient-dark">Submit</button>
+                    @if(auth()->user()->canWrite('user-profile'))
+                        <button type="submit" class="btn bg-gradient-dark">
+                            Submit
+                        </button>
+                    @endif
                 </form>
 
             </div>
