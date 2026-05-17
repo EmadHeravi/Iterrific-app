@@ -93,6 +93,19 @@ class UserProfile extends Component
     public function updatedAvatarUpload()
     {
         $this->validateOnly('avatarUpload');
+
+        abort_unless(auth()->user()->canWrite('user-profile'), 403);
+
+        $avatarPath = $this->avatarUpload->store('avatars', 'public');
+
+        $this->user->forceFill([
+            'avatar_path' => $avatarPath,
+        ])->save();
+
+        $this->avatar_path = $avatarPath;
+        $this->avatarUpload = null;
+
+        session()->flash('status', 'Profile image updated successfully.');
     }
 
     public function update()
