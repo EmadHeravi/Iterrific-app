@@ -43,6 +43,29 @@
 
                             @endif
 
+                            @if ($emailSent)
+                                <div class="text-center py-2">
+                                    <div class="icon icon-shape icon-lg bg-gradient-warning shadow-warning text-center border-radius-lg mx-auto mb-3">
+                                        <i class="material-icons text-white">mark_email_read</i>
+                                    </div>
+
+                                    <h5 class="mb-2">
+                                        Reset link sent
+                                    </h5>
+
+                                    <p class="text-secondary text-sm mb-4">
+                                        We sent a password reset link to <strong>{{ $sentEmail }}</strong>.
+                                        Check your inbox and follow the link to choose a new password.
+                                    </p>
+
+                                    <a
+                                        href="{{ route('login') }}"
+                                        class="btn btn-warning w-100"
+                                    >
+                                        Back to Login
+                                    </a>
+                                </div>
+                            @else
                             <form wire:submit.prevent="show">
 
                                 <div class="mb-3">
@@ -88,6 +111,7 @@
                                 </div>
 
                             </form>
+                            @endif
 
                         </div>
 
