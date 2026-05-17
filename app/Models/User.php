@@ -41,6 +41,8 @@ class User extends Authenticatable implements MustVerifyEmailContract
 
         'role',
         'user_type',
+        'hourly_fee',
+        'hourly_fee_currency',
         'employee_id',
 
         /*
@@ -52,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'company_name',
         'company_registration_number',
         'vat_number',
+        'vat_rate',
 
         /*
         |--------------------------------------------------------------------------
@@ -127,6 +130,8 @@ class User extends Authenticatable implements MustVerifyEmailContract
     protected $casts = [
 
         'email_verified_at' => 'datetime',
+        'hourly_fee' => 'decimal:2',
+        'vat_rate' => 'decimal:2',
 
     ];
 
@@ -237,7 +242,17 @@ class User extends Authenticatable implements MustVerifyEmailContract
 
     public function canRead(string $module): bool
     {
-        return $this->hasPermission($module, 'read');
+        $permissionUser = $this->permissionPreviewUser();
+
+        if ($module === 'billing' && $permissionUser->user_type === 'external') {
+            return true;
+        }
+
+        if ($permissionUser->id !== $this->id) {
+            return $permissionUser->hasDirectPermission($module, 'read');
+        }
+
+        return $this->hasDirectPermission($module, 'read');
     }
 
     public function canWrite(string $module): bool

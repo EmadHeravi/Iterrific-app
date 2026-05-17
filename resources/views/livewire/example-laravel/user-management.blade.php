@@ -112,6 +112,35 @@
 
                     </div>
 
+                    <div class="user-management-filters mt-3">
+                        <div class="row g-3">
+                            <div class="col-md-4 col-lg-3">
+                                <label class="form-label text-xs text-secondary mb-1">
+                                    Role
+                                </label>
+                                <select class="form-control border" wire:model.live="roleFilter">
+                                    <option value="">All roles</option>
+                                    @foreach($roleOptions as $roleOption)
+                                        <option value="{{ $roleOption->slug }}">
+                                            {{ $roleOption->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 col-lg-3">
+                                <label class="form-label text-xs text-secondary mb-1">
+                                    Type
+                                </label>
+                                <select class="form-control border" wire:model.live="typeFilter">
+                                    <option value="">All types</option>
+                                    <option value="internal">Internal</option>
+                                    <option value="external">External</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- TABLE --}}
                     <div class="card-body px-0 pb-2 pt-3">
 
@@ -143,8 +172,18 @@
                                             TYPE
                                         </th>
 
+                                        @if($canManageHourlyFee)
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">
+                                                HOURLY FEE
+                                            </th>
+                                        @endif
+
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             COMPANY
+                                        </th>
+
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">
+                                            VAT %
                                         </th>
 
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -252,6 +291,19 @@
 
                                             </td>
 
+                                            @if($canManageHourlyFee)
+                                                {{-- HOURLY FEE --}}
+                                                <td class="align-middle text-end">
+                                                    @if($user->user_type === 'external')
+                                                        <span class="text-sm font-weight-bold">
+                                                            {{ $user->hourly_fee_currency ?: 'EUR' }} {{ number_format((float) $user->hourly_fee, 2) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-sm text-secondary">-</span>
+                                                    @endif
+                                                </td>
+                                            @endif
+
                                             {{-- COMPANY --}}
                                             <td>
 
@@ -265,6 +317,13 @@
 
                                                 </div>
 
+                                            </td>
+
+                                            {{-- VAT RATE --}}
+                                            <td class="align-middle text-end">
+                                                <span class="text-sm font-weight-bold">
+                                                    {{ number_format((float) ($user->vat_rate ?? 21), 2) }}%
+                                                </span>
                                             </td>
 
                                             {{-- EMPLOYEE ID --}}
@@ -348,7 +407,7 @@
 
                                         <tr>
 
-                                            <td colspan="10" class="text-center py-4">
+                                            <td colspan="{{ $canManageHourlyFee ? 12 : 11 }}" class="text-center py-4">
 
                                                 <span class="text-secondary">
                                                     No users found.
@@ -524,8 +583,14 @@
 
                         <div class="row">
 
+                            <div class="col-12 mb-3" style="order: 1;">
+                                <h6 class="user-modal-section-title">
+                                    Personal Information
+                                </h6>
+                            </div>
+
                             {{-- FIRST NAME --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 10;">
 
                                 <label class="form-label">
                                     First Name
@@ -552,7 +617,7 @@
                             </div>
 
                             {{-- LAST NAME --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 11;">
 
                                 <label class="form-label">
                                     Last Name
@@ -579,7 +644,7 @@
                             </div>
 
                             {{-- EMAIL --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 12;">
 
                                 <label class="form-label">
                                     Email
@@ -606,7 +671,7 @@
                             </div>
 
                             {{-- PASSWORD --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 13;">
 
                                 <label class="form-label">
                                     Password
@@ -633,7 +698,7 @@
                             </div>
 
                             {{-- ROLE --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 51;">
 
                                 <label class="form-label">
                                     Role
@@ -668,7 +733,7 @@
                             </div>
 
                             @if($role === 'manager')
-                                <div class="col-12 mb-4" wire:key="manager-assigned-employees">
+                                <div class="col-12 mb-4" style="order: 52;" wire:key="manager-assigned-employees">
                                     <h6 class="text-dark mb-2">
                                         Assigned Employees
                                     </h6>
@@ -739,7 +804,7 @@
                             @endif
 
                             {{-- USER TYPE --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 53;">
 
                                 <label class="form-label">
                                     User Type
@@ -774,8 +839,53 @@
 
                             </div>
 
+                            @if($canManageHourlyFee && $user_type === 'external')
+                                {{-- HOURLY FEE --}}
+                                <div class="col-md-6 mb-4" style="order: 54;">
+
+                                    <label class="form-label">
+                                        Hourly Fee
+                                    </label>
+
+                                    <div class="user-hourly-fee-field">
+                                        <select
+                                            class="user-hourly-fee-currency"
+                                            wire:model="hourly_fee_currency"
+                                            aria-label="Hourly fee currency"
+                                        >
+                                            <option value="EUR">EUR</option>
+                                            <option value="USD">USD</option>
+                                        </select>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            class="form-control @error('hourly_fee') is-invalid @enderror"
+                                            wire:model="hourly_fee"
+                                        >
+                                    </div>
+
+                                    <small class="text-secondary d-block mt-1">
+                                        Visible and editable only for administrators.
+                                    </small>
+
+                                    @error('hourly_fee')
+                                        <small class="text-danger d-block mt-1">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+
+                                    @error('hourly_fee_currency')
+                                        <small class="text-danger d-block mt-1">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+
+                                </div>
+                            @endif
+
                             {{-- EMPLOYEE ID --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-4" style="order: 55;">
 
                                 <label class="form-label">
                                     Employee ID
@@ -802,7 +912,7 @@
                             </div>
 
                             {{-- COMPANY --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-3 mb-4" style="order: 31;">
 
                                 <label class="form-label">
                                     Company Name
@@ -829,7 +939,7 @@
                             </div>
 
                             {{-- CHAMBER --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-3 mb-4" style="order: 32;">
 
                                 <label class="form-label">
                                     Chamber of Commerce Number
@@ -856,7 +966,7 @@
                             </div>
 
                             {{-- VAT --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-3 mb-4" style="order: 33;">
 
                                 <label class="form-label">
                                     VAT Number
@@ -874,9 +984,39 @@
 
                             </div>
 
+                            {{-- VAT RATE --}}
+                            <div class="col-md-3 mb-4" style="order: 33;">
+
+                                <label class="form-label">
+                                    VAT Rate (%)
+                                </label>
+
+                                <div class="input-group input-group-outline">
+
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="form-control @error('vat_rate') is-invalid @enderror"
+                                        wire:model="vat_rate"
+                                    >
+
+                                </div>
+
+                                @error('vat_rate')
+
+                                    <small class="text-danger d-block mt-1">
+                                        {{ $message }}
+                                    </small>
+
+                                @enderror
+
+                            </div>
+
 
                             {{-- PHONE --}}
-                            <div class="col-md-12 mb-4">
+                            <div class="col-md-6 col-lg-5 mb-4" style="order: 21;">
 
                                 <label class="form-label">
                                     Phone Number
@@ -911,19 +1051,11 @@
 
                             </div>
 
+                            <div class="w-100" style="order: 21;"></div>
 
-
-                            {{-- PERSONAL ADDRESS TITLE --}}
-                            <div class="col-12 mt-3">
-
-                                <h6 class="text-dark">
-                                    Personal Address
-                                </h6>
-
-                            </div>
 
                             {{-- PERSONAL ADDRESS --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-5 mb-4" style="order: 22;">
 
                                 <label class="form-label">
                                     Address
@@ -950,7 +1082,7 @@
                             </div>
 
                             {{-- PERSONAL POSTAL --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-2 mb-4" style="order: 23;">
 
                                 <label class="form-label">
                                     Postal Code
@@ -977,7 +1109,7 @@
                             </div>
 
                             {{-- PERSONAL CITY --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-3 mb-4" style="order: 24;">
 
                                 <label class="form-label">
                                     City
@@ -1004,19 +1136,20 @@
                             </div>
 
                             {{-- PERSONAL COUNTRY --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-2 mb-4" style="order: 25;">
 
                                 <label class="form-label">
                                     Country
                                 </label>
 
-                                <div class="input-group input-group-outline">
+                                <div class="input-group input-group-outline" wire:ignore>
 
-                                    <input
-                                        type="text"
+                                    <select
                                         class="form-control @error('personal_country') is-invalid @enderror"
-                                        wire:model="personal_country"
-                                    >
+                                        data-user-country-select
+                                        data-country-target="personal_country"
+                                        data-current-country="{{ $personal_country ?: 'Netherlands' }}"
+                                    ></select>
 
                                 </div>
 
@@ -1030,18 +1163,20 @@
 
                             </div>
 
+                            <div class="w-100" style="order: 33;"></div>
+
 
                             {{-- BUSINESS ADDRESS TITLE --}}
-                            <div class="col-12 mt-3">
+                            <div class="col-12 mt-3" style="order: 30;">
 
-                                <h6 class="text-dark">
-                                    Business Address
+                                <h6 class="user-modal-section-title">
+                                    Business Information
                                 </h6>
 
                             </div>
 
                             {{-- BUSINESS ADDRESS --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-5 mb-4" style="order: 34;">
 
                                 <label class="form-label">
                                     Address
@@ -1068,7 +1203,7 @@
                             </div>
 
                             {{-- BUSINESS POSTAL --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-2 mb-4" style="order: 35;">
 
                                 <label class="form-label">
                                     Postal Code
@@ -1095,7 +1230,7 @@
                             </div>
 
                             {{-- BUSINESS CITY --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-3 mb-4" style="order: 36;">
 
                                 <label class="form-label">
                                     City
@@ -1122,19 +1257,20 @@
                             </div>
 
                             {{-- BUSINESS COUNTRY --}}
-                            <div class="col-md-2 mb-4">
+                            <div class="col-md-2 mb-4" style="order: 37;">
 
                                 <label class="form-label">
                                     Country
                                 </label>
 
-                                <div class="input-group input-group-outline">
+                                <div class="input-group input-group-outline" wire:ignore>
 
-                                    <input
-                                        type="text"
+                                    <select
                                         class="form-control @error('business_country') is-invalid @enderror"
-                                        wire:model="business_country"
-                                    >
+                                        data-user-country-select
+                                        data-country-target="business_country"
+                                        data-current-country="{{ $business_country ?: 'Netherlands' }}"
+                                    ></select>
 
                                 </div>
 
@@ -1149,16 +1285,16 @@
                             </div>
 
                             {{-- BANKING TITLE --}}
-                            <div class="col-12 mt-3">
+                            <div class="col-12 mt-2" style="order: 38;">
 
-                                <h6 class="text-dark">
+                                <h6 class="text-dark text-sm font-weight-bold">
                                     Banking Information
                                 </h6>
 
                             </div>
 
                             {{-- BANK NAME --}}
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-4 mb-4" style="order: 39;">
 
                                 <label class="form-label">
                                     Bank Name
@@ -1177,7 +1313,7 @@
                             </div>
 
                             {{-- ACCOUNT HOLDER --}}
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-4 mb-4" style="order: 40;">
 
                                 <label class="form-label">
                                     Account Holder
@@ -1196,7 +1332,7 @@
                             </div>
 
                             {{-- IBAN --}}
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-4 mb-4" style="order: 41;">
 
                                 <label class="form-label">
                                     IBAN
@@ -1215,10 +1351,10 @@
                             </div>
 
                             {{-- ABOUT --}}
-                            <div class="col-12 mb-4">
+                            <div class="col-12 mb-4" style="order: 14;">
 
                                 <label class="form-label">
-                                    About User
+                                    About
                                 </label>
 
                                 <div class="input-group input-group-outline">
@@ -1231,6 +1367,12 @@
 
                                 </div>
 
+                            </div>
+
+                            <div class="col-12 mt-3 mb-3" style="order: 50;">
+                                <h6 class="user-modal-section-title">
+                                    Employment & Access
+                                </h6>
                             </div>
 
                         </div>

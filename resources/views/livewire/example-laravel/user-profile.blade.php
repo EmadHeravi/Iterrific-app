@@ -6,7 +6,7 @@
             border-radius: 0.5rem;
             display: grid;
             gap: 1rem;
-            grid-template-columns: auto 1fr minmax(260px, 0.7fr);
+            grid-template-columns: auto minmax(260px, 0.7fr);
             padding: 1rem;
         }
 
@@ -16,30 +16,6 @@
             height: 6rem !important;
             object-fit: cover;
             width: 6rem !important;
-        }
-
-        .profile-avatar-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .profile-avatar-option {
-            background: transparent;
-            border: 2px solid transparent;
-            border-radius: 0.5rem;
-            padding: 0.15rem;
-        }
-
-        .profile-avatar-option.active {
-            border-color: var(--dashboard-config-color, #fb8c00);
-        }
-
-        .profile-avatar-option img {
-            border-radius: 0.4rem;
-            height: 3.25rem !important;
-            object-fit: cover;
-            width: 3.25rem !important;
         }
 
         @media (max-width: 991.98px) {
@@ -104,18 +80,6 @@
                     <div class="profile-avatar-panel">
                         <div class="profile-avatar-preview">
                             <img src="{{ $this->avatarUrl() }}" alt="Selected profile image">
-                        </div>
-
-                        <div class="profile-avatar-options">
-                            @foreach($avatarOptions as $avatarOption)
-                                <button
-                                    type="button"
-                                    class="profile-avatar-option {{ $selectedAvatar === $avatarOption ? 'active' : '' }}"
-                                    wire:click="selectAvatar('{{ $avatarOption }}')"
-                                >
-                                    <img src="{{ asset($avatarOption) }}" alt="Avatar option">
-                                </button>
-                            @endforeach
                         </div>
 
                         <div class="profile-avatar-upload">
@@ -190,22 +154,35 @@
                     <h6 class="text-dark mb-3">Company Information</h6>
                 </div>
 
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                     <label class="form-label">Company Name</label>
                     <input wire:model.blur="company_name" type="text" class="form-control border border-2 p-2">
                     @error('company_name')<p class="text-danger inputerror">{{ $message }}</p>@enderror
                 </div>
 
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                     <label class="form-label">Company Registration Number</label>
                     <input wire:model.blur="company_registration_number" type="text" class="form-control border border-2 p-2">
                     @error('company_registration_number')<p class="text-danger inputerror">{{ $message }}</p>@enderror
                 </div>
 
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                     <label class="form-label">VAT Number</label>
                     <input wire:model.blur="vat_number" type="text" class="form-control border border-2 p-2">
                     @error('vat_number')<p class="text-danger inputerror">{{ $message }}</p>@enderror
+                </div>
+
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">VAT Rate (%)</label>
+                    <input
+                        wire:model.blur="vat_rate"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        class="form-control border border-2 p-2"
+                    >
+                    @error('vat_rate')<p class="text-danger inputerror">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="col-12 mt-3">

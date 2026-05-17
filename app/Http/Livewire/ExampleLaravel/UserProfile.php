@@ -21,6 +21,7 @@ class UserProfile extends Component
     public $company_name = '';
     public $company_registration_number = '';
     public $vat_number = '';
+    public $vat_rate = '21.00';
     public $personal_address = '';
     public $personal_postal_code = '';
     public $personal_city = '';
@@ -36,19 +37,9 @@ class UserProfile extends Component
     public $phone_number = '';
     public $about = '';
     public $avatar_path = '';
-    public $selectedAvatar = '';
     public $avatarUpload;
     public $new_password = '';
     public $new_password_confirmation = '';
-
-    public array $avatarOptions = [
-        'assets/img/team-1.jpg',
-        'assets/img/team-2.jpg',
-        'assets/img/team-3.jpg',
-        'assets/img/team-4.jpg',
-        'assets/img/team-5.jpg',
-        'assets/img/ivana-square.jpg',
-    ];
 
     protected function rules()
     {
@@ -60,6 +51,7 @@ class UserProfile extends Component
             'company_name' => 'nullable|string|max:255',
             'company_registration_number' => 'nullable|string|max:255',
             'vat_number' => 'nullable|string|max:255',
+            'vat_rate' => 'required|numeric|min:0|max:100',
             'personal_address' => 'nullable|string|max:255',
             'personal_postal_code' => 'nullable|string|max:50',
             'personal_city' => 'nullable|string|max:255',
@@ -74,7 +66,6 @@ class UserProfile extends Component
             'phone_country_code' => 'nullable|string|max:10',
             'phone_number' => 'nullable|string|max:25',
             'about' => 'nullable|string|max:1000',
-            'selectedAvatar' => 'nullable|string|max:255',
             'avatarUpload' => 'nullable|image|max:2048',
             'new_password' => [
                 'nullable',
@@ -99,21 +90,9 @@ class UserProfile extends Component
         $this->validateOnly($propertyName);
     }
 
-    public function selectAvatar($avatarPath)
-    {
-        if (! in_array($avatarPath, $this->avatarOptions, true)) {
-            return;
-        }
-
-        $this->selectedAvatar = $avatarPath;
-        $this->avatar_path = $avatarPath;
-        $this->avatarUpload = null;
-    }
-
     public function updatedAvatarUpload()
     {
         $this->validateOnly('avatarUpload');
-        $this->selectedAvatar = '';
     }
 
     public function update()
@@ -153,9 +132,6 @@ class UserProfile extends Component
             $this->{$field} = $this->user->{$field};
         }
 
-        $this->selectedAvatar = in_array($this->avatar_path, $this->avatarOptions, true)
-            ? $this->avatar_path
-            : '';
     }
 
     private function fillUser(): void
@@ -195,6 +171,7 @@ class UserProfile extends Component
             'company_name',
             'company_registration_number',
             'vat_number',
+            'vat_rate',
             'personal_address',
             'personal_postal_code',
             'personal_city',
@@ -225,7 +202,7 @@ class UserProfile extends Component
                 : Storage::disk('public')->url($this->avatar_path);
         }
 
-        return asset('assets/img/team-1.jpg');
+        return asset('assets/img/Logo.png');
     }
 
     public function render()

@@ -261,6 +261,84 @@
 
         }
 
+        function initUserCountryInputs() {
+
+            document.querySelectorAll('[data-user-country-select]').forEach((select) => {
+
+                if (select.classList.contains('user-country-initialized')) {
+                    return;
+                }
+
+                select.classList.add('user-country-initialized');
+
+                const countryData = window.intlTelInputGlobals
+                    ? window.intlTelInputGlobals.getCountryData()
+                    : [];
+
+                const preferredCountries = ['nl', 'be', 'de', 'fr', 'gb', 'us'];
+                const currentCountry = (select.getAttribute('data-current-country') || '').toLowerCase();
+
+                function isoToFlag(iso2) {
+                    return iso2
+                        .toUpperCase()
+                        .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt()));
+                }
+
+                const sortedCountries = countryData
+                    .slice()
+                    .sort((first, second) => {
+                        const firstPreferred = preferredCountries.indexOf(first.iso2);
+                        const secondPreferred = preferredCountries.indexOf(second.iso2);
+
+                        if (firstPreferred !== -1 || secondPreferred !== -1) {
+                            return (firstPreferred === -1 ? 999 : firstPreferred) - (secondPreferred === -1 ? 999 : secondPreferred);
+                        }
+
+                        return first.name.localeCompare(second.name);
+                    });
+
+                sortedCountries.forEach((country) => {
+                    const option = document.createElement('option');
+
+                    option.value = country.name;
+                    option.dataset.countryCode = country.iso2.toUpperCase();
+                    option.textContent = `${isoToFlag(country.iso2)} ${country.iso2.toUpperCase()} - ${country.name}`;
+
+                    select.appendChild(option);
+                });
+
+                const selectedCountry = sortedCountries.find((country) => {
+                    return country.name.toLowerCase() === currentCountry
+                        || country.iso2.toLowerCase() === currentCountry;
+                });
+
+                if (selectedCountry) {
+                    select.value = selectedCountry.name;
+                }
+
+                function updateUserCountryData() {
+
+                    const wireElement = select.closest('[wire\\:id]');
+                    const target = select.getAttribute('data-country-target');
+
+                    if (!wireElement || !target) {
+                        return;
+                    }
+
+                    const wire = Livewire.find(wireElement.getAttribute('wire:id'));
+
+                    wire.set(target, select.value);
+
+                }
+
+                select.addEventListener('change', updateUserCountryData);
+
+                updateUserCountryData();
+
+            });
+
+        }
+
         function initPhoneInputs() {
 
             initUserPhoneInput();
@@ -268,6 +346,8 @@
             initProjectPhoneInputs();
 
             initCalendarCountryInputs();
+
+            initUserCountryInputs();
 
         }
 

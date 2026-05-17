@@ -13,6 +13,8 @@ use Illuminate\Validation\Rule;
 class UserManagement extends Component
 {
     public $activeTab = 'accounts';
+    public $roleFilter = '';
+    public $typeFilter = '';
 
     /*
     |--------------------------------------------------------------------------
@@ -37,12 +39,15 @@ class UserManagement extends Component
 
     public $role = 'member';
     public $user_type = 'external';
+    public $hourly_fee;
+    public $hourly_fee_currency = 'EUR';
 
     public $employee_id;
 
     public $company_name;
     public $company_registration_number;
     public $vat_number;
+    public $vat_rate = '21.00';
 
     public $personal_address;
     public $personal_postal_code;
@@ -207,12 +212,15 @@ class UserManagement extends Component
 
         $this->role = $user->role;
         $this->user_type = $user->user_type;
+        $this->hourly_fee = $user->hourly_fee;
+        $this->hourly_fee_currency = $user->hourly_fee_currency ?: 'EUR';
 
         $this->employee_id = $user->employee_id;
 
         $this->company_name = $user->company_name;
         $this->company_registration_number = $user->company_registration_number;
         $this->vat_number = $user->vat_number;
+        $this->vat_rate = $user->vat_rate ?? '21.00';
 
         $this->personal_address = $user->personal_address;
         $this->personal_postal_code = $user->personal_postal_code;
@@ -262,10 +270,13 @@ class UserManagement extends Component
             'password',
             'role',
             'user_type',
+            'hourly_fee',
+            'hourly_fee_currency',
             'employee_id',
             'company_name',
             'company_registration_number',
             'vat_number',
+            'vat_rate',
             'personal_address',
             'personal_postal_code',
             'personal_city',
@@ -288,6 +299,17 @@ class UserManagement extends Component
         $this->phone_country_code = '+31';
         $this->role = 'member';
         $this->user_type = 'external';
+        $this->hourly_fee = null;
+        $this->hourly_fee_currency = 'EUR';
+        $this->vat_rate = '21.00';
+    }
+
+    public function updatedUserType($userType)
+    {
+        if ($userType !== 'external') {
+            $this->hourly_fee = null;
+            $this->hourly_fee_currency = 'EUR';
+        }
     }
 
     public function updatedRole($role)
@@ -368,11 +390,20 @@ class UserManagement extends Component
 
                 'user_type'  => $this->user_type,
 
+                'hourly_fee' => $this->canManageHourlyFee() && $this->user_type === 'external'
+                    ? $this->hourly_fee
+                    : $user->hourly_fee,
+
+                'hourly_fee_currency' => $this->canManageHourlyFee() && $this->user_type === 'external'
+                    ? $this->hourly_fee_currency
+                    : $user->hourly_fee_currency,
+
                 'employee_id' => $this->employee_id,
 
                 'company_name' => $this->company_name,
                 'company_registration_number' => $this->company_registration_number,
                 'vat_number' => $this->vat_number,
+                'vat_rate' => $this->vat_rate,
 
                 'personal_address' => $this->personal_address,
                 'personal_postal_code' => $this->personal_postal_code,
@@ -432,11 +463,20 @@ class UserManagement extends Component
 
                 'user_type'  => $this->user_type,
 
+                'hourly_fee' => $this->canManageHourlyFee() && $this->user_type === 'external'
+                    ? $this->hourly_fee
+                    : null,
+
+                'hourly_fee_currency' => $this->canManageHourlyFee() && $this->user_type === 'external'
+                    ? $this->hourly_fee_currency
+                    : 'EUR',
+
                 'employee_id' => $this->employee_id,
 
                 'company_name' => $this->company_name,
                 'company_registration_number' => $this->company_registration_number,
                 'vat_number' => $this->vat_number,
+                'vat_rate' => $this->vat_rate,
 
                 'personal_address' => $this->personal_address,
                 'personal_postal_code' => $this->personal_postal_code,
@@ -503,6 +543,20 @@ class UserManagement extends Component
 
             'user_type' => 'required|in:internal,external',
 
+            'hourly_fee' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:999999.99',
+                Rule::requiredIf($this->canManageHourlyFee() && $this->user_type === 'external'),
+            ],
+
+            'hourly_fee_currency' => [
+                'nullable',
+                'in:EUR,USD',
+                Rule::requiredIf($this->canManageHourlyFee() && $this->user_type === 'external'),
+            ],
+
             'phone_country_code' => 'nullable|string|max:10',
 
             'phone_number' => 'nullable|string|max:25',
@@ -520,6 +574,8 @@ class UserManagement extends Component
             'company_registration_number' => 'nullable|string|max:255',
 
             'vat_number' => 'nullable|string|max:255',
+
+            'vat_rate' => 'required|numeric|min:0|max:100',
 
             'employee_id' => 'nullable|string|max:255',
 
@@ -700,6 +756,12 @@ class UserManagement extends Component
         abort_unless(auth()->user()->canWrite('user-management'), 403);
     }
 
+    private function canManageHourlyFee(): bool
+    {
+        return auth()->user()->role === 'administrator'
+            && ! session('permission_preview_user_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | RENDER
@@ -710,8 +772,11 @@ class UserManagement extends Component
     {
         return view('livewire.example-laravel.user-management', [
 
-            'users' => User::latest()->get()
-            ,
+            'users' => User::query()
+                ->when($this->roleFilter !== '', fn ($query) => $query->where('role', $this->roleFilter))
+                ->when($this->typeFilter !== '', fn ($query) => $query->where('user_type', $this->typeFilter))
+                ->latest()
+                ->get(),
             'roles' => Role::with(['permissions'])
                 ->withCount('users')
                 ->orderBy('name')
@@ -741,6 +806,7 @@ class UserManagement extends Component
                 ->get(),
             'permissionModules' => AppPermissions::modules(),
             'canWriteUserManagement' => auth()->user()->canWrite('user-management'),
+            'canManageHourlyFee' => $this->canManageHourlyFee(),
 
         ]);
     }

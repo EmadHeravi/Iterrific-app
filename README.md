@@ -1,317 +1,499 @@
-# [Material Dashboard 2 Laravel Livewire](https://material-dashboard-laravel-livewire.creative-tim.com)
+# ITerrific Workforce & Time Registration App
 
-![version](https://img.shields.io/badge/version-1.0.0-blue.svg) 
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
-[![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/material-dashboard-laravel-livewire.svg)](https://github.com/creativetimofficial/material-dashboard-laravel-livewire/issues?q=is%3Aopen+is%3Aissue) 
-[![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/material-dashboard-laravel-livewire.svg)](https://github.com/creativetimofficial/material-dashboard-laravel-livewire/issues?q=is%3Aissue+is%3Aclosed)
+ITerrific is a Laravel and Livewire application for managing employees, projects, time registration, approvals, billing visibility, and public website contact flows.
 
+The app started from Material Dashboard 2 Laravel Livewire, but the current codebase has been extended into an ITerrific-specific internal operations tool with role permissions, project assignment, external employee billing, email verification, Microsoft Graph mail delivery, and PDF exports.
 
-*Frontend version*: Material Dashboard v3.0.0. More info at https://www.creative-tim.com/product/material-dashboard
-[ <img src="https://s3.amazonaws.com/creativetim_bucket/products/600/original/material-dashboard-laravel-livewire.jpg?raw=true" width="100%" />](https://material-dashboard-laravel-livewire.creative-tim.com)
+## What The Software Does
 
-Speed up your web development with the Bootstrap 5 Admin Dashboard built for Laravel Framework 9.x and up.
+The application supports two main areas:
 
-If you want to get more features, go PRO with [Material Dashboard 2 PRO Laravel Livewire](https://www.creative-tim.com/product/material-dashboard-pro-laravel-livewire).
+- Public website pages for visitors: home, services, about, references, contact, privacy, login, and signup.
+- Authenticated dashboard modules for employees, managers, and administrators.
 
-## Table of Contents
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-* [Usage](#usage)
-* [Versions](#versions)
-* [Demo](#demo)
-* [Documentation](#documentation)
-* [Login](#login)
-* [Register](#register)
-* [Forgot Password](#forgot-password)
-* [Reset Password](#reset-password)
-* [User Profile](#user-profile)
-* [Dashboard](#dashboard)
-* [File Structure](#file-structure)
-* [Browser Support](#browser-support)
-* [Reporting Issues](#reporting-issues)
-* [Licensing](#licensing)
-* [Useful Links](#useful-links)
-* [Social Media](#social-media)
-* [Credits](#credits)
+Main dashboard features:
 
-## Prerequisites
+- User Management: create, edit, delete, filter, and manage users.
+- Roles & Permissions: define read/write access per dashboard module.
+- Permission Preview: administrators can preview the app as another user.
+- Projects: define client projects, external contacts, approval manager details, and assigned users.
+- Calendars: define country-specific non-working holidays.
+- Time Entry: employees register hours per assigned project and month.
+- Approvals: managers/admins review, approve, decline, and export employee hours.
+- Billing: external employees see their own approved-hour billing analytics; administrators can review all external users.
+- User Profile: users maintain profile, company, address, banking, VAT, avatar, and password data.
+- Email Verification: registered and admin-created users must verify email before dashboard access.
+- Microsoft Graph Mail: contact forms, verification emails, and password reset emails are sent through Microsoft Graph.
+- PDF Export: time entry/approval exports use DomPDF.
 
-If you don't already have an Apache local environment with PHP and MySQL, use one of the following links:
+## Technology Stack
 
- - Windows: https://updivision.com/blog/post/beginner-s-guide-to-setting-up-your-local-development-environment-on-windows
- - Linux & Mac: https://updivision.com/blog/post/guide-what-is-lamp-and-how-to-install-it-on-ubuntu-and-macos
+- Laravel 11
+- Livewire 3
+- Blade
+- Laravel Mix
+- Bootstrap 5 / Material Dashboard 2
+- Chart.js
+- intl-tel-input
+- DomPDF
+- Microsoft Graph mail integration
+- MySQL/MariaDB
 
-Also, you will need to install Composer: https://getcomposer.org/doc/00-intro.md  
-And Laravel: https://laravel.com/docs/10.x
+## Requirements
 
-## Installation
-1. Unzip the downloaded archive
-2. Copy and paste **material-dashboard-2-free-livewire-master** folder in your **projects** folder. Rename the folder to your project's name
-3. In your terminal run `composer install`
-4. Copy `.env.example` to `.env` and updated the configurations (mainly the database configuration)
-5. In your terminal run `php artisan key:generate`
-6. Run `php artisan migrate --seed` to create the database tables and seed the roles and users tables
-7. Run `php artisan storage:link` to create the storage symlink (if you are using **Vagrant** with **Homestead** for development, remember to ssh into your virtual machine and run the command from there).
+Use PHP 8.2 or newer. Laravel 11 and the installed lock file require PHP 8.2-compatible runtime behavior.
 
+Required server components:
 
-## Usage
-Register a user or login with default user **admin@material.com** and password **secret** from your database and start testing (make sure to run the migrations and seeders for these credentials to be available).
+- PHP 8.2+
+- Composer 2.2+
+- MySQL or MariaDB
+- Node.js and npm, for local frontend builds
+- Web server such as Nginx, Apache, or OpenLiteSpeed
 
-Besides the dashboard, the auth pages, the billing and table pages, there is also has an edit profile page. All the necessary files are installed out of the box and all the needed routes are added to `routes/web.php`. Keep in mind that all of the features can be viewed once you login using the credentials provided or by registering your own user. 
+Required PHP extensions include:
 
+- `curl`
+- `dom`
+- `fileinfo`
+- `gd`
+- `mbstring`
+- `openssl`
+- `pdo_mysql`
+- `tokenizer`
+- `xml`
+- `zip`
 
-## Versions
-[<img src="https://github.com/creativetimofficial/public-assets/blob/master/logos/html-logo.jpg?raw=true" width="60" height="60" />](https://demos.creative-tim.com/material-dashboard/examples/dashboard.html)
-[<img src="https://github.com/creativetimofficial/public-assets/blob/master/logos/laravel_logo.png?raw=true" width="60" height="60" />](https://material-dashboard-laravel-livewire.creative-tim.com/)
+`gd` is required for PDF/logo/image handling through DomPDF.
 
-| HTML | Laravel Livewire |
-| --- | --- |
-| [![HTML](https://s3.amazonaws.com/creativetim_bucket/products/50/thumb/material-dashboard.jpg?raw=true)](https://www.creative-tim.com/product/material-dashboard) | [![Laravel](https://s3.amazonaws.com/creativetim_bucket/products/600/thumb/material-dashboard-laravel-livewire.jpg?raw=true)](https://www.creative-tim.com/product/material-dashboard-laravel-livewire)  |
+## Local Installation
 
-| Vue | React |
-| --- | --- |
-| [![Vue](https://s3.amazonaws.com/creativetim_bucket/products/596/thumb/vue-material-dashboard-2.jpg?raw=true)](https://www.creative-tim.com/product/vue-material-dashboard-2) | [![React](https://s3.amazonaws.com/creativetim_bucket/products/71/thumb/material-dashboard-react.jpg?raw=true)](https://www.creative-tim.com/product/material-dashboard-react)  | 
+Clone the repository:
 
-
-## Demo
-| Register | Login | Dashboard |
-| --- | --- | ---  |
-| [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/register.png" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/sign-up) | [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/login.png" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/sign-in)  | [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/dashboard.PNG" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/dashboard)
-
-| Forgot Password Page | Reset Password Page | Profile Page  |
-| --- | --- | ---  |
-| [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/forgot-password.png" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/forgot-password)  | [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/reset-password.png" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/sign-in) | [<img src="https://github.com/AlexVlad95/material-2-free-livewire/blob/master/screens/profile.png" width="322" />](https://material-dashboard-laravel-livewire.creative-tim.com/user-profile)
-[View More](https://material-dashboard-laravel-livewire.creative-tim.com/dashboard)
-
-## Documentation
-The documentation for the Material Dashboard Laravel is hosted at our [website](https://material-dashboard-laravel-livewire.creative-tim.com/documentation/getting-started/installation.html).
-
-### Login
-If you are not logged in you can only access this page or the Sign Up page. The default url takes you to the login page where you use the default credentials **admin@material.com** with the password **secret**. Logging in is possible only with already existing credentials. For this to work you should have run the migrations. 
-
-The `App/Http/Livewire/Auth/Login.php` handles the logging in of an existing user.
-
-```
-       public function store()
-                {
-                    $attributes = $this->validate();
-            
-                    if (! auth()->attempt($attributes)) {
-                        throw ValidationException::withMessages([
-                            'email' => 'Your provided credentials could not be verified.'
-                        ]);
-                    }
-            
-                    session()->regenerate();
-            
-                    return redirect('/dashboard');
-            
-                }
+```bash
+git clone https://github.com/EmadHeravi/Iterrific-app.git
+cd Iterrific-app
 ```
 
-### Register
-You can register as a user by filling in the name, email and password for your account. You can do this by accessing the sign up page from the "**Sign Up**" button in the top navbar or by clicking the "**Sign Up**" button from the bottom of the log in form.. Another simple way is adding **/sign-up** in the url.
+Install PHP dependencies:
 
-The `App/Http/Livewire/Auth/Register.php` handles the registration of a new user.
-
-```
-   public function store(){
-
-                  $attributes = $this->validate();
-          
-                  $user = User::create($attributes);
-          
-                  auth()->login($user);
-                  
-                  return redirect('/dashboard');
-              } 
+```bash
+composer install
 ```
 
-### Forgot Password
-If a user forgets the account's password it is possible to reset the password. For this the user should click on the "**here**" under the login form.
+Install frontend dependencies:
 
-The `App/Http/Livewire/Auth/ForgotPassword.php` takes care of sending an email to the user where he can reset the password afterwards.
-
-```
-       public function show(){
-          
-                  $this->validate();
-          
-                  $user = User::where('email', $this->email)->first();
-          
-                      if($user){
-          
-                          $this->notify(new ResetPassword($user->id));
-          
-                          return back()->with('status', "Email sent.");
-          
-                      } else {
-                          return back()->with('email', "Invalid email");
-                      }
-              }
+```bash
+npm install
 ```
 
-### Reset Password
-The user who forgot the password gets an email on the account's email address. The user can access the reset password page by clicking the button found in the email. The link for resetting the password is available for 12 hours. The user must add the email, the password and confirm the password for his password to be updated.
+Create the environment file:
 
-The `App/Http/Livewire/Auth/ResetPassword.php` helps the user reset the password.
-
-```
-     public function update(){
-        
-                $this->validate(); 
-                  
-                $existingUser = User::where('email', $this->email)->first();
-        
-                if($existingUser && $existingUser->id == $this->urlID) { 
-                    $existingUser->update([
-                        'password' => $this->password
-                    ]);
-                    redirect('sign-in')->with('status', 'Password changed.');
-                } else {
-                    return back()->with('email', "Invalid email");
-                }
-            
-            }
+```bash
+cp .env.example .env
 ```
 
-### User Profile
-The profile can be accessed by a logged in user by clicking "**User Profile**" from the sidebar or adding **/user-profile** in the url. The user can add information like phone number, location, description or change the name and email.
+Generate the app key:
 
-The `App/Http/Livewire/ExampleLaravel/UserProfile.php` handles the user's profile information.
-
-```
-    public function update()
-                {
-                    $this->validate();
-                    $this->user->save();
-                    return back()->withStatus('Profile successfully updated.');
-                
-                 }
-}
+```bash
+php artisan key:generate
 ```
 
-### Dashboard
-You can access the dashboard either by using the "**Dashboard**" link in the left sidebar or by adding **/dashboard** in the url after logging in. 
+Configure `.env`:
 
-## File Structure
-```
-+---app
-|   +---Console
-|   |       Kernel.php
-|   +---Exceptions
-|   |       Handler.php
-|   +---Http
-|   |   +---Controllers
-|   |   |       Controller.php
-|   |   |       
-|   |   +---Middleware
-|   |   |       Authenticate.php
-|   |   |       EncryptCookies.php
-|   |   |       PreventRequestsDuringMaintenance.php
-|   |   |       RedirectIfAuthenticated.php
-|   |   |       TrimStrings.php
-|   |   |       TrustHosts.php
-|   |   |       TrustProxies.php
-|   |   |       VerifyCsrfToken.php
-|   |   |
-|   |   +---Livewire
-|   |   |   | 
-|   |   |   +---Auth
-|   |   |   |     ForgotPassword.php
-|   |   |   |     Login.php
-|   |   |   |     Logout.php
-|   |   |   |     Register.php
-|   |   |   |     ResetPassword.php
-|   |   |   | 
-|   |   |   +---ExampleLaravel 
-|   |   |   |     UserManagement.php
-|   |   |   |     UserProfile.php
-|   |   |   |
-|   |   |   |   Billing.php
-|   |   |   |   Dashboard.php
-|   |   |   |   Notifications.php
-|   |   |   |   Profile.php
-|   |   |   |   RTL.php
-|   |   |   |   StaticSignIn.php
-|   |   |   |   StaticSignUp.php
-|   |   |   |   Tables.php
-|   |   |   \   VirtualReality.php
-|   |   |   
-|   |    \---Kernel.php   
-|   |   
-|   +---Models
-|   |        User.php
-|   |
-|   +---Notifications
-|   |        ResetPassword.php
-|   |     
-|   |---Proviers
-|   |      AppServiceProvider.php
-|   |      AuthServiceProvider.php
-|   |      BroadcastServiceProvider.php
-|   |      EventServiceProvider.php
-|   |      RouteServiceProvider.php
-|   | 
-|   \---View
-|          App.php
-|          Base.php
-|   
-....
+```env
+APP_NAME=ITerrific
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=iterrific
+DB_USERNAME=root
+DB_PASSWORD=
+
+MS_TENANT_ID=
+MS_CLIENT_ID=
+MS_CLIENT_SECRET=
+MS_MAIL_FROM=info@iterrific.nl
 ```
 
-## Browser Support
-At present, we officially aim to support the last two versions of the following browsers:
+Run migrations:
 
-<img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/chrome.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/firefox.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/edge.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/safari.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/opera.png" width="64" height="64">
+```bash
+php artisan migrate
+```
 
+Optional seeders:
 
-## Reporting Issues
-We use GitHub Issues as the official bug tracker for the Material Dashboard. Here are some advices for our users that want to report an issue:
+```bash
+php artisan db:seed
+php artisan db:seed --class=NetherlandsCalendarSeeder
+```
 
-1. Make sure that you are using the latest version of the Material Dashboard. Check the CHANGELOG from your dashboard on our [website](https://www.creative-tim.com/product/material-dashboard-laravel-livewire).
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
+Create the storage symlink:
 
+```bash
+php artisan storage:link
+```
 
-## Licensing
-- Copyright 2022 [Creative Tim](https://www.creative-tim.com?ref=readme-md2ll)
-- Creative Tim [license](https://www.creative-tim.com/license?ref=readme-md2ll)
+Build frontend assets:
 
-## Useful Links
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new) (earn money)
-- [Blog Creative Tim](http://blog.creative-tim.com/)
-- [Free Products](https://www.creative-tim.com/bootstrap-themes/free) from Creative Tim
-- [Premium Products](https://www.creative-tim.com/bootstrap-themes/premium?ref=md2ll-readme) from Creative Tim
-- [React Products](https://www.creative-tim.com/bootstrap-themes/react-themes?ref=md2ll-readme) from Creative Tim
-- [VueJS Products](https://www.creative-tim.com/bootstrap-themes/vuejs-themes?ref=md2ll-readme) from Creative Tim
-- [More products](https://www.creative-tim.com/bootstrap-themes?ref=md2ll-readme) from Creative Tim
-- Check our Bundles [here](https://www.creative-tim.com/bundles??ref=md2ll-readme)
+```bash
+npm run dev
+```
 
-### Social Media
+For production assets:
 
-### Creative Tim
-Twitter: <https://twitter.com/CreativeTim?ref=md2ll-readme>
+```bash
+npm run prod
+```
 
-Facebook: <https://www.facebook.com/CreativeTim?ref=md2ll-readme>
+Start the local server:
 
-Dribbble: <https://dribbble.com/creativetim?ref=md2ll-readme>
+```bash
+php artisan serve
+```
 
-Instagram: <https://www.instagram.com/CreativeTimOfficial?ref=md2ll-readme>
+Open:
 
-### Updivision:
+```text
+http://127.0.0.1:8000
+```
 
-Twitter: <https://twitter.com/updivision?ref=md2ll-readme>
+## Production Deployment
 
-Facebook: <https://www.facebook.com/updivision?ref=md2ll-readme>
+The production server used for this app runs PHP 8.2 from:
 
-Linkedin: <https://www.linkedin.com/company/updivision?ref=md2ll-readme>
+```bash
+/www/server/php/82/bin/php
+```
 
-Updivision Blog: <https://updivision.com/blog/?ref=md2ll-readme>
+Use that PHP binary for Artisan commands.
 
-## Credits
+From the production project directory:
 
-- [Creative Tim](https://creative-tim.com/?ref=md2ll-readme)
-- [UPDIVISION](https://updivision.com)
+```bash
+cd /www/wwwroot/iterrific.nl
+```
+
+Pull the latest code:
+
+```bash
+git pull origin master
+```
+
+Install/update Composer dependencies:
+
+```bash
+COMPOSER_ALLOW_SUPERUSER=1 composer2 install --no-dev --optimize-autoloader --no-scripts --ignore-platform-req=php --ignore-platform-req=ext-curl --ignore-platform-req=ext-dom
+```
+
+Then run package discovery with PHP 8.2:
+
+```bash
+/www/server/php/82/bin/php artisan package:discover --ansi
+```
+
+Run migrations:
+
+```bash
+/www/server/php/82/bin/php artisan migrate --force
+```
+
+Seed Netherlands holidays when needed:
+
+```bash
+/www/server/php/82/bin/php artisan db:seed --class=NetherlandsCalendarSeeder --force
+```
+
+Create storage symlink if not already present:
+
+```bash
+/www/server/php/82/bin/php artisan storage:link
+```
+
+Publish Livewire assets:
+
+```bash
+/www/server/php/82/bin/php artisan livewire:publish --assets
+```
+
+Clear and rebuild caches:
+
+```bash
+/www/server/php/82/bin/php artisan optimize:clear
+/www/server/php/82/bin/php artisan optimize
+```
+
+Verify migrations:
+
+```bash
+/www/server/php/82/bin/php artisan migrate:status
+```
+
+Production `.env` must include:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://iterrific.nl
+
+MS_TENANT_ID=...
+MS_CLIENT_ID=...
+MS_CLIENT_SECRET=...
+MS_MAIL_FROM=info@iterrific.nl
+```
+
+## Microsoft Graph Mail
+
+The app sends mail through `App\Services\MicrosoftGraphMailer`.
+
+Used for:
+
+- Contact form notifications
+- Email verification
+- Password reset
+
+Required environment variables:
+
+```env
+MS_TENANT_ID=
+MS_CLIENT_ID=
+MS_CLIENT_SECRET=
+MS_MAIL_FROM=
+```
+
+After changing these values on production, clear and rebuild config cache:
+
+```bash
+/www/server/php/82/bin/php artisan optimize:clear
+/www/server/php/82/bin/php artisan optimize
+```
+
+## User Roles
+
+The app supports role-based permissions:
+
+- Administrator: full system access and access to all external billing data.
+- Manager: can manage assigned employee hours according to permissions.
+- Member: can register and manage own time entries before approval.
+
+Permissions are configurable in:
+
+```text
+Settings -> User Management -> Roles
+```
+
+Each role can be given read/write access per dashboard module.
+
+## Time Entry Rules
+
+Employees register hours against assigned projects.
+
+Time entries include:
+
+- User
+- Project
+- Entry date
+- Hours
+- Description
+- Status
+- Weekend/holiday flags
+- Calendar relation
+- Review data
+
+Statuses:
+
+- Draft
+- Submitted
+- Approved
+- Declined
+
+Members can create and edit their own entries until approval. Approved entries require manager/admin permission to change.
+
+## Approval Rules
+
+Managers can review hours for assigned employees.
+
+Assignments are managed in User Management when editing a manager user. Administrators can access broader approval views depending on permissions.
+
+## Billing Rules
+
+Billing is designed for external employees.
+
+Calculations use:
+
+```text
+approved hours * hourly fee = amount excluding VAT
+amount excluding VAT * user VAT rate = VAT amount
+amount excluding VAT + VAT amount = amount including VAT
+```
+
+Hourly fee, currency, and VAT rate are stored per user.
+
+Visibility:
+
+- External user: can only view their own billing data.
+- Administrator: can view all external users.
+- Permission preview: restricted to the previewed user's own billing data.
+
+## Calendars And Holidays
+
+The Calendars module stores national/non-working days per country.
+
+The Netherlands seeder can be run with:
+
+```bash
+php artisan db:seed --class=NetherlandsCalendarSeeder
+```
+
+Production:
+
+```bash
+/www/server/php/82/bin/php artisan db:seed --class=NetherlandsCalendarSeeder --force
+```
+
+## Useful Artisan Commands
+
+Clear views:
+
+```bash
+php artisan view:clear
+```
+
+Clear all caches:
+
+```bash
+php artisan optimize:clear
+```
+
+Build caches:
+
+```bash
+php artisan optimize
+```
+
+Run tests:
+
+```bash
+php artisan test
+```
+
+List routes:
+
+```bash
+php artisan route:list
+```
+
+Check migrations:
+
+```bash
+php artisan migrate:status
+```
+
+## Frontend Assets
+
+Development build:
+
+```bash
+npm run dev
+```
+
+Production build:
+
+```bash
+npm run prod
+```
+
+The build uses:
+
+```text
+scripts/mix-build.js
+webpack.mix.js
+```
+
+Compiled assets are written to `public/css`, `public/js`, and `public/mix-manifest.json`.
+
+## Important Paths
+
+Livewire components:
+
+```text
+app/Http/Livewire
+```
+
+Dashboard views:
+
+```text
+resources/views/livewire
+```
+
+Settings modules:
+
+```text
+resources/views/livewire/example-laravel
+```
+
+Routes:
+
+```text
+routes/web.php
+```
+
+Models:
+
+```text
+app/Models
+```
+
+Migrations:
+
+```text
+database/migrations
+```
+
+Seeders:
+
+```text
+database/seeders
+```
+
+Custom dashboard CSS:
+
+```text
+public/assets/css/iterrific-dashboard.css
+```
+
+## Troubleshooting
+
+Composer uses PHP 8.1 instead of PHP 8.2:
+
+Use the full PHP 8.2 path for Artisan commands and ensure Composer is compatible with the deployed PHP version.
+
+Missing `curl` or `dom`:
+
+Enable/install the PHP extensions for the CLI and web PHP version.
+
+PDF export says GD is missing:
+
+Install/enable the PHP `gd` extension for PHP 8.2.
+
+Livewire assets missing:
+
+```bash
+/www/server/php/82/bin/php artisan livewire:publish --assets
+```
+
+Environment variables changed but app still reads old values:
+
+```bash
+/www/server/php/82/bin/php artisan optimize:clear
+/www/server/php/82/bin/php artisan optimize
+```
+
+## License And Credits
+
+The dashboard UI is based on Material Dashboard 2 Laravel Livewire by Creative Tim and UPDIVISION. The ITerrific-specific application logic, modules, styling, and workflows extend that base for ITerrific operations.

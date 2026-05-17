@@ -49,8 +49,6 @@
                     ['time-entry', 'schedule', 'Time Entry'],
                     ['approvals', 'fact_check', 'Approvals'],
                     ['billing', 'receipt_long', 'Billing'],
-                    ['notifications', 'notifications', 'Notifications'],
-                    ['profile', 'person', 'Profile'],
                 ];
             @endphp
 
