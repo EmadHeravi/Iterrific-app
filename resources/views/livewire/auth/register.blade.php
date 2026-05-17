@@ -1,4 +1,17 @@
 <div>
+    <style>
+        .form-check:not(.form-switch) #terms.iterrific-checkbox[type="checkbox"]:checked,
+        .form-check:not(.form-switch) #terms.iterrific-checkbox[type="checkbox"]:indeterminate {
+            background: #fb8c00 !important;
+            border-color: #fb8c00 !important;
+        }
+
+        .form-check:not(.form-switch) #terms.iterrific-checkbox[type="checkbox"]:focus {
+            border-color: #fb8c00 !important;
+            box-shadow: 0 0 0 0.2rem rgba(251, 140, 0, 0.18) !important;
+        }
+    </style>
+
     <section class="min-vh-100 d-flex align-items-center bg-gray-200">
 
         <div class="container">
