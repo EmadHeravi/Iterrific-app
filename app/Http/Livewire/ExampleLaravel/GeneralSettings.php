@@ -168,7 +168,7 @@ class GeneralSettings extends Component
             return $this->faviconUpload->temporaryUrl();
         }
 
-        return asset($this->settings['app_favicon_path'] ?? 'assets/img/favicon.png');
+        return $this->versionedAssetUrl($this->settings['app_favicon_path'] ?? 'assets/img/favicon.png');
     }
 
     public function logoUrl(): string
@@ -177,6 +177,15 @@ class GeneralSettings extends Component
             return $this->logoUpload->temporaryUrl();
         }
 
-        return asset($this->settings['app_logo_path'] ?? 'assets/img/Logo.png');
+        return $this->versionedAssetUrl($this->settings['app_logo_path'] ?? 'assets/img/Logo.png');
+    }
+
+    private function versionedAssetUrl(string $path): string
+    {
+        $path = ltrim($path, '/');
+        $absolutePath = public_path($path);
+        $version = is_file($absolutePath) ? filemtime($absolutePath) : time();
+
+        return asset($path) . '?v=' . $version;
     }
 }
