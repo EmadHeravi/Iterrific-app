@@ -1,4 +1,54 @@
 <div class="container-fluid px-2 px-md-4">
+    <style>
+        .profile-avatar-panel {
+            align-items: flex-start;
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: auto 1fr minmax(260px, 0.7fr);
+            padding: 1rem;
+        }
+
+        .profile-avatar-preview img {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(52, 71, 103, 0.12);
+            height: 6rem !important;
+            object-fit: cover;
+            width: 6rem !important;
+        }
+
+        .profile-avatar-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .profile-avatar-option {
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            padding: 0.15rem;
+        }
+
+        .profile-avatar-option.active {
+            border-color: var(--dashboard-config-color, #fb8c00);
+        }
+
+        .profile-avatar-option img {
+            border-radius: 0.4rem;
+            height: 3.25rem !important;
+            object-fit: cover;
+            width: 3.25rem !important;
+        }
+
+        @media (max-width: 991.98px) {
+            .profile-avatar-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <div class="page-header min-height-300 border-radius-xl mt-4"
         style="background-image: url('https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?auto=format&fit=crop&w=1920&q=80'); background-position: center;">
         <span class="mask bg-gradient-warning opacity-4 dynamic-config-gradient"></span>
