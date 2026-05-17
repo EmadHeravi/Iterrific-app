@@ -36,7 +36,7 @@
                                         <input type="password" class="form-control" name="password" required>
                                     </div>
                                     <div class="form-check form-switch d-flex align-items-center mb-3">
-                                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                                        <input class="form-check-input iterrific-checkbox" type="checkbox" id="rememberMe">
                                         <label class="form-check-label mb-0 ms-2" for="rememberMe">Remember
                                             me</label>
                                     </div>

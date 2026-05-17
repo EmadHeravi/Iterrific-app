@@ -41,7 +41,7 @@
                                 </div>
 
                                 <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <input class="form-check-input iterrific-checkbox" type="checkbox" id="rememberMe">
                                     <label class="form-check-label" for="rememberMe">
                                         Remember me
                                     </label>

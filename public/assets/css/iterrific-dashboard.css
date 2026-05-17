@@ -344,14 +344,14 @@ div.iti .iti__flag-container {
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked {
-    background: #fb8c00;
-    border-color: #fb8c00;
+    background: #fb8c00 !important;
+    border-color: #fb8c00 !important;
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked:focus,
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:focus {
-    border-color: #fb8c00;
-    box-shadow: 0 0 0 0.2rem rgba(251, 140, 0, 0.18);
+    border-color: #fb8c00 !important;
+    box-shadow: 0 0 0 0.2rem rgba(251, 140, 0, 0.18) !important;
 }
 
 .auth-password-field .auth-password-input {

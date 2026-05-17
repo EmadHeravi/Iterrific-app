@@ -32,7 +32,7 @@
                                                 <input type="password" class="form-control" name="password" required>
                                             </div>
                                             <div class="form-check form-check-info text-start ps-0">
-                                                <input class="form-check-input" type="checkbox" value=""
+                                                <input class="form-check-input iterrific-checkbox" type="checkbox" value=""
                                                     id="flexCheckDefault" checked>
                                                 <label class="form-check-label" for="flexCheckDefault">
                                                     I agree the <a href="javascript:;"

@@ -20,14 +20,14 @@
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked {
-    background: var(--it-orange);
-    border-color: var(--it-orange);
+    background: var(--it-orange) !important;
+    border-color: var(--it-orange) !important;
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked:focus,
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:focus {
-    border-color: var(--it-orange);
-    box-shadow: 0 0 0 0.2rem rgba(245, 124, 0, 0.18);
+    border-color: var(--it-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(245, 124, 0, 0.18) !important;
 }
 
 .auth-password-field .auth-password-input {
