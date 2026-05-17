@@ -15,7 +15,7 @@ class MicrosoftGraphMailer
         ?string $replyToEmail = null,
         ?string $replyToName = null
     ): void {
-        $from = (string) env('MS_MAIL_FROM');
+        $from = (string) config('services.microsoft_graph_mail.mail_from');
 
         if ($from === '') {
             throw new RuntimeException('MS_MAIL_FROM is not configured.');
@@ -82,13 +82,19 @@ class MicrosoftGraphMailer
 
     private function accessToken(): string
     {
-        $tenantId = (string) env('MS_TENANT_ID');
+        $tenantId = (string) config('services.microsoft_graph_mail.tenant_id');
+        $clientId = (string) config('services.microsoft_graph_mail.client_id');
+        $clientSecret = (string) config('services.microsoft_graph_mail.client_secret');
+
+        if ($tenantId === '' || $clientId === '' || $clientSecret === '') {
+            throw new RuntimeException('Microsoft Graph mail credentials are not configured.');
+        }
 
         $response = Http::asForm()->post(
             "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token",
             [
-                'client_id' => env('MS_CLIENT_ID'),
-                'client_secret' => env('MS_CLIENT_SECRET'),
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
                 'scope' => 'https://graph.microsoft.com/.default',
                 'grant_type' => 'client_credentials',
             ]
