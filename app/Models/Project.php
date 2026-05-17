@@ -28,4 +28,9 @@ class Project extends Model
             ->withPivot('active')
             ->withTimestamps();
     }
+
+    public function timeEntries()
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
 }

@@ -18,23 +18,6 @@
         @else
         {{ $slot }}
         @endif
-
-    @elseif (in_array(request()->route()->getName(),['rtl']))
-    {{ $slot }}
-    @elseif (in_array(request()->route()->getName(),['virtual-reality']))
-    <div class="virtual-reality">
-        <x-navbars.navs.auth></x-navbars.navs.auth>
-        <div class="border-radius-xl mx-2 mx-md-3 position-relative"
-            style="background-image: url('{{ asset('assets') }}/img/vr-bg.jpg'); background-size: cover;">
-            <x-navbars.sidebar></x-navbars.sidebar>
-            <main class="main-content border-radius-lg h-100">
-                {{  $slot }}
-
-        </div>
-        <x-footers.auth></x-footers.auth>
-        </main>
-        <x-plugins></x-plugins>
-    </div>
     @else
     <x-navbars.sidebar></x-navbars.sidebar>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">

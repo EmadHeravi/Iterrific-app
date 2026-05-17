@@ -18,6 +18,39 @@
 .text-it {
     color: var(--it-orange);
 }
+
+.form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked {
+    background: var(--it-orange);
+    border-color: var(--it-orange);
+}
+
+.form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked:focus,
+.form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:focus {
+    border-color: var(--it-orange);
+    box-shadow: 0 0 0 0.2rem rgba(245, 124, 0, 0.18);
+}
+
+.auth-password-field .auth-password-input {
+    border-bottom-right-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+.auth-password-toggle {
+    align-items: center;
+    border-color: #d2d6da !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    display: inline-flex;
+    justify-content: center;
+    min-width: 3rem;
+    padding: 0.625rem 0.75rem;
+}
+
+.auth-password-toggle .material-icons {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
 /* Footer hover color */
 footer a {
     color: #6c757d; /* text-secondary */

@@ -46,10 +46,9 @@
             @php
                 $menuItems = [
                     ['dashboard', 'dashboard', 'Dashboard'],
-                    ['tables', 'table_view', 'Tables'],
+                    ['time-entry', 'schedule', 'Time Entry'],
+                    ['approvals', 'fact_check', 'Approvals'],
                     ['billing', 'receipt_long', 'Billing'],
-                    ['virtual-reality', 'view_in_ar', 'Virtual Reality'],
-                    ['rtl', 'format_textdirection_r_to_l', 'RTL'],
                     ['notifications', 'notifications', 'Notifications'],
                     ['profile', 'person', 'Profile'],
                 ];
@@ -83,7 +82,7 @@
 
             @endforeach
 
-            @if(auth()->user()->canRead('user-management') || auth()->user()->canRead('projects'))
+            @if(auth()->user()->canRead('user-management') || auth()->user()->canRead('projects') || auth()->user()->canRead('calendars'))
             {{-- LARAVEL EXAMPLES --}}
             <li class="nav-item mt-3">
 
@@ -143,6 +142,32 @@
 
                     <span class="nav-link-text ms-1">
                         Projects
+                    </span>
+
+                </a>
+
+            </li>
+            @endif
+
+            {{-- CALENDARS --}}
+            @if(auth()->user()->canRead('calendars'))
+            <li class="nav-item settings-sub-item">
+
+                <a
+                    class="nav-link text-dark settings-sub-link {{ Route::currentRouteName() == 'calendars' ? 'active bg-gradient-warning text-white' : '' }}"
+                    href="{{ route('calendars') }}"
+                >
+
+                    <div class="settings-sub-icon text-center me-2 d-flex align-items-center justify-content-center">
+
+                        <i class="material-icons opacity-10">
+                            event
+                        </i>
+
+                    </div>
+
+                    <span class="nav-link-text ms-1">
+                        Calendars
                     </span>
 
                 </a>
@@ -231,6 +256,64 @@
     {{-- SIDEBAR FOOTER --}}
     <div class="sidenav-footer position-absolute w-100 bottom-0">
 
+        @if(auth()->user()->role === 'administrator')
+            @php
+                $permissionPreviewUserId = session('permission_preview_user_id');
+                $permissionPreviewUsers = \App\Models\User::orderBy('first_name')
+                    ->orderBy('last_name')
+                    ->get(['id', 'first_name', 'last_name', 'email', 'role']);
+            @endphp
+
+            <div class="mx-3 mb-3 permission-preview-card">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="permission-preview-icon bg-gradient-warning dynamic-config-gradient">
+                        <i class="material-icons text-white">visibility</i>
+                    </div>
+                    <div class="ms-2">
+                        <p class="text-xs text-uppercase font-weight-bolder mb-0 text-dark">
+                            Permission Preview
+                        </p>
+                        <p class="text-xxs text-secondary mb-0">
+                            View dashboard as another user
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('permission-preview.set') }}">
+                    @csrf
+                    <select
+                        name="user_id"
+                        class="form-control form-control-sm permission-preview-select"
+                        onchange="this.form.submit()"
+                    >
+                        <option value="">
+                            View as myself
+                        </option>
+
+                        @foreach($permissionPreviewUsers as $previewUser)
+                            <option
+                                value="{{ $previewUser->id }}"
+                                @selected((int) $permissionPreviewUserId === $previewUser->id)
+                            >
+                                {{ $previewUser->full_name ?: $previewUser->email }} - {{ ucfirst($previewUser->role) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+
+                @if($permissionPreviewUserId)
+                    <form method="POST" action="{{ route('permission-preview.clear') }}" class="mt-2">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100 mb-0">
+                            Reset to Admin View
+                        </button>
+                    </form>
+                @endif
+            </div>
+        @endif
+
         <div class="mx-3 mb-2">
 
             <a
@@ -238,18 +321,6 @@
                 href="{{ url('/') }}"
             >
                 ITerrific Home
-            </a>
-
-        </div>
-
-        <div class="mx-3 mb-2">
-
-            <a
-                class="btn bg-gradient-warning w-100 dynamic-config-btn"
-                href="../../documentation/getting-started/installation.html"
-                target="_blank"
-            >
-                View Documentation
             </a>
 
         </div>

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MicrosoftGraphMailer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 class ContactController extends Controller
 {
-    public function submit(Request $request)
+    public function submit(Request $request, MicrosoftGraphMailer $mailer)
     {
-        // 1️⃣ Validate form fields
         $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => 'required|email',
@@ -17,17 +17,16 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        // 2️⃣ Validate Cloudflare Turnstile
-        $captchaResponse = Http::asForm()->post(
+        $captchaResponse = \Illuminate\Support\Facades\Http::asForm()->post(
             'https://challenges.cloudflare.com/turnstile/v0/siteverify',
             [
-                'secret'   => config('services.turnstile.secret_key'),
+                'secret' => config('services.turnstile.secret_key'),
                 'response' => $request->input('cf-turnstile-response'),
                 'remoteip' => $request->ip(),
             ]
         );
 
-        if (!($captchaResponse->json('success') ?? false)) {
+        if (! ($captchaResponse->json('success') ?? false)) {
             return back()
                 ->withErrors([
                     'captcha' => 'CAPTCHA verification failed.'
@@ -35,81 +34,23 @@ class ContactController extends Controller
                 ->withInput();
         }
 
-        // 3️⃣ Get Microsoft Graph access token
-        $tenantId = env('MS_TENANT_ID');
+        $html = view('emails.contact-request', [
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'messageBody' => $request->message,
+        ])->render();
 
-        $tokenResponse = Http::asForm()->post(
-            "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token",
-            [
-                'client_id'     => env('MS_CLIENT_ID'),
-                'client_secret' => env('MS_CLIENT_SECRET'),
-                'scope'         => 'https://graph.microsoft.com/.default',
-                'grant_type'    => 'client_credentials',
-            ]
-        );
-
-        // Check token request
-        if (!$tokenResponse->successful()) {
-
-            \Log::error('Microsoft Graph Token Error', [
-                'status' => $tokenResponse->status(),
-                'body'   => $tokenResponse->body(),
-            ]);
-
-            return back()
-                ->withErrors([
-                    'mail' => 'Unable to authenticate mail service.'
-                ])
-                ->withInput();
-        }
-
-        $accessToken = $tokenResponse->json()['access_token'];
-
-        // 4️⃣ Send email via Microsoft Graph
-        $mailResponse = Http::withToken($accessToken)
-            ->post(
-                'https://graph.microsoft.com/v1.0/users/' . env('MS_MAIL_FROM') . '/sendMail',
-                [
-                    'message' => [
-
-                        'subject' => 'New Contact Request - ITerrific Website',
-
-                        'body' => [
-                            'contentType' => 'Text',
-                            'content' =>
-                                "Name: {$request->name}\n" .
-                                "Email: {$request->email}\n" .
-                                "Subject: {$request->subject}\n\n" .
-                                "Message:\n{$request->message}",
-                        ],
-
-                        'toRecipients' => [
-                            [
-                                'emailAddress' => [
-                                    'address' => env('MS_MAIL_FROM'),
-                                ],
-                            ],
-                        ],
-
-                        'replyTo' => [
-                            [
-                                'emailAddress' => [
-                                    'address' => $request->email,
-                                    'name'    => $request->name,
-                                ],
-                            ],
-                        ],
-                    ],
-                ]
+        try {
+            $mailer->send(
+                (string) env('MS_MAIL_FROM'),
+                'New Contact Request - ITerrific Website',
+                $html,
+                $request->email,
+                $request->name
             );
-
-        // 5️⃣ Check mail send result
-        if (!$mailResponse->successful()) {
-
-            \Log::error('Microsoft Graph Mail Error', [
-                'status' => $mailResponse->status(),
-                'body'   => $mailResponse->body(),
-            ]);
+        } catch (RuntimeException $exception) {
+            report($exception);
 
             return back()
                 ->withErrors([
@@ -118,7 +59,6 @@ class ContactController extends Controller
                 ->withInput();
         }
 
-        // 6️⃣ Success
         return back()->with(
             'success',
             'Thank you! Your message has been sent successfully.'

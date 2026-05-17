@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\AppPermissions;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -61,6 +62,8 @@ class UserManagement extends Component
     public $phone_number;
 
     public $about;
+    public $assigned_employee_ids = [];
+    public $employeeSearch = '';
 
     public $showRoleModal = false;
     public $roleIdBeingEdited = null;
@@ -229,6 +232,11 @@ class UserManagement extends Component
         $this->phone_number = $user->phone_number;
 
         $this->about = $user->about;
+        $this->assigned_employee_ids = $user->managedEmployees()
+            ->wherePivot('active', true)
+            ->pluck('users.id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
 
         $this->showUserModal = true;
     }
@@ -271,6 +279,8 @@ class UserManagement extends Component
             'iban',
             'phone_number',
             'about',
+            'assigned_employee_ids',
+            'employeeSearch',
         ]);
 
         $this->userIdBeingEdited = null;
@@ -278,6 +288,47 @@ class UserManagement extends Component
         $this->phone_country_code = '+31';
         $this->role = 'member';
         $this->user_type = 'external';
+    }
+
+    public function updatedRole($role)
+    {
+        if ($role !== 'manager') {
+            $this->assigned_employee_ids = [];
+            $this->employeeSearch = '';
+        }
+    }
+
+    public function addAssignedEmployee($employeeId)
+    {
+        $employeeId = (int) $employeeId;
+
+        if ($this->userIdBeingEdited && $employeeId === (int) $this->userIdBeingEdited) {
+            return;
+        }
+
+        if (! User::whereKey($employeeId)->where('role', '!=', 'administrator')->exists()) {
+            return;
+        }
+
+        $this->assigned_employee_ids = collect($this->assigned_employee_ids)
+            ->map(fn ($id) => (int) $id)
+            ->push($employeeId)
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $this->employeeSearch = '';
+    }
+
+    public function removeAssignedEmployee($employeeId)
+    {
+        $employeeId = (int) $employeeId;
+
+        $this->assigned_employee_ids = collect($this->assigned_employee_ids)
+            ->map(fn ($id) => (int) $id)
+            ->reject(fn ($id) => $id === $employeeId)
+            ->values()
+            ->toArray();
     }
 
     /*
@@ -358,6 +409,8 @@ class UserManagement extends Component
 
             }
 
+            $this->syncManagedEmployees($user);
+
         } else {
 
             /*
@@ -366,7 +419,7 @@ class UserManagement extends Component
             |--------------------------------------------------------------------------
             */
 
-            User::create([
+            $user = User::create([
 
                 'first_name' => $this->first_name,
                 'last_name'  => $this->last_name,
@@ -406,6 +459,9 @@ class UserManagement extends Component
 
             ]);
 
+            $this->syncManagedEmployees($user);
+            event(new Registered($user));
+
         }
 
         $this->closeUserModal();
@@ -423,6 +479,8 @@ class UserManagement extends Component
 
         $user = User::findOrFail($id);
 
+        $user->managedEmployees()->detach();
+        $user->employeeManagers()->detach();
         $user->projects()->detach();
         $user->delete();
     }
@@ -481,7 +539,39 @@ class UserManagement extends Component
 
             'about' => 'nullable|string',
 
+            'assigned_employee_ids' => 'array',
+
+            'assigned_employee_ids.*' => [
+                'integer',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', '!=', 'administrator')),
+            ],
+
         ];
+    }
+
+    private function syncManagedEmployees(User $user): void
+    {
+        $user->managedEmployees()->detach();
+
+        if ($user->role !== 'manager') {
+            return;
+        }
+
+        $employeeIds = collect($this->assigned_employee_ids)
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id !== (int) $user->id)
+            ->unique()
+            ->values();
+
+        if ($employeeIds->isEmpty()) {
+            return;
+        }
+
+        $user->managedEmployees()->sync(
+            $employeeIds
+                ->mapWithKeys(fn ($id) => [$id => ['active' => true]])
+                ->toArray()
+        );
     }
 
     public function openRoleModal()
@@ -627,6 +717,28 @@ class UserManagement extends Component
                 ->orderBy('name')
                 ->get(),
             'roleOptions' => Role::orderBy('name')->get(),
+            'assignableEmployees' => User::where('role', '!=', 'administrator')
+                ->when($this->userIdBeingEdited, fn ($query) => $query->where('id', '!=', $this->userIdBeingEdited))
+                ->when($this->employeeSearch, function ($query) {
+                    $search = '%' . $this->employeeSearch . '%';
+
+                    $query->where(function ($innerQuery) use ($search) {
+                        $innerQuery
+                            ->where('first_name', 'like', $search)
+                            ->orWhere('last_name', 'like', $search)
+                            ->orWhere('email', 'like', $search)
+                            ->orWhere('employee_id', 'like', $search);
+                    });
+                })
+                ->whereNotIn('id', collect($this->assigned_employee_ids)->map(fn ($id) => (int) $id)->all())
+                ->orderBy('first_name')
+                ->orderBy('last_name')
+                ->limit(12)
+                ->get(),
+            'selectedAssignedEmployees' => User::whereIn('id', collect($this->assigned_employee_ids)->map(fn ($id) => (int) $id)->all())
+                ->orderBy('first_name')
+                ->orderBy('last_name')
+                ->get(),
             'permissionModules' => AppPermissions::modules(),
             'canWriteUserManagement' => auth()->user()->canWrite('user-management'),
 

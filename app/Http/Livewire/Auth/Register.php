@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Auth;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Livewire\Component;
 
 class Register extends Component
@@ -26,9 +27,11 @@ class Register extends Component
 
         $user = User::create($attributes);
 
+        event(new Registered($user));
+
         auth()->login($user);
         
-        return redirect('/dashboard');
+        return redirect()->route('verification.notice');
     } 
 
     public function render()

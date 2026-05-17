@@ -8,14 +8,14 @@ class AppPermissions
     {
         return [
             'dashboard' => 'Dashboard',
-            'tables' => 'Tables',
+            'time-entry' => 'Time Entry',
+            'approvals' => 'Approvals',
             'billing' => 'Billing',
-            'virtual-reality' => 'Virtual Reality',
-            'rtl' => 'RTL',
             'notifications' => 'Notifications',
             'profile' => 'Profile',
             'user-management' => 'User Management',
             'projects' => 'Projects',
+            'calendars' => 'Calendars',
             'user-profile' => 'User Profile',
         ];
     }

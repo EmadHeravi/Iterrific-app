@@ -186,11 +186,88 @@
 
         }
 
+        function initCalendarCountryInputs() {
+
+            document.querySelectorAll('[data-calendar-country-select]').forEach((select) => {
+
+                if (select.classList.contains('calendar-country-initialized')) {
+                    return;
+                }
+
+                select.classList.add('calendar-country-initialized');
+
+                const countryData = window.intlTelInputGlobals
+                    ? window.intlTelInputGlobals.getCountryData()
+                    : [];
+
+                const preferredCountries = ['nl', 'be', 'de', 'fr', 'gb', 'us'];
+                const currentCountry = (select.getAttribute('data-current-country') || 'NL').toLowerCase();
+
+                function isoToFlag(iso2) {
+                    return iso2
+                        .toUpperCase()
+                        .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt()));
+                }
+
+                const sortedCountries = countryData
+                    .slice()
+                    .sort((first, second) => {
+                        const firstPreferred = preferredCountries.indexOf(first.iso2);
+                        const secondPreferred = preferredCountries.indexOf(second.iso2);
+
+                        if (firstPreferred !== -1 || secondPreferred !== -1) {
+                            return (firstPreferred === -1 ? 999 : firstPreferred) - (secondPreferred === -1 ? 999 : secondPreferred);
+                        }
+
+                        return first.name.localeCompare(second.name);
+                    });
+
+                sortedCountries.forEach((country) => {
+                    const option = document.createElement('option');
+
+                    option.value = country.iso2.toUpperCase();
+                    option.dataset.countryName = country.name;
+                    option.textContent = `${isoToFlag(country.iso2)} ${country.iso2.toUpperCase()} - ${country.name}`;
+
+                    select.appendChild(option);
+                });
+
+                select.value = currentCountry.toUpperCase();
+
+                function updateCalendarCountryData() {
+
+                    const wireElement = select.closest('[wire\\:id]');
+                    const selectedOption = select.options[select.selectedIndex];
+
+                    if (!wireElement || !selectedOption) {
+                        return;
+                    }
+
+                    const wire = Livewire.find(wireElement.getAttribute('wire:id'));
+
+                    const countryCode = select.value;
+                    const countryName = selectedOption.dataset.countryName || selectedOption.textContent.replace(/^[^\s]+\s+[A-Z]{2}\s+-\s+/, '');
+
+                    wire.set('country_code', countryCode);
+                    wire.set('country_name', countryName);
+
+                }
+
+                select.addEventListener('change', updateCalendarCountryData);
+
+                updateCalendarCountryData();
+
+            });
+
+        }
+
         function initPhoneInputs() {
 
             initUserPhoneInput();
 
             initProjectPhoneInputs();
+
+            initCalendarCountryInputs();
 
         }
 

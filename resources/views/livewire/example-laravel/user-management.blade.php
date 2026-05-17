@@ -643,7 +643,8 @@
 
                                     <select
                                         class="form-control @error('role') is-invalid @enderror"
-                                        wire:model="role"
+                                        wire:model.live="role"
+                                        wire:change="$set('role', $event.target.value)"
                                     >
 
                                         @foreach($roleOptions as $roleOption)
@@ -665,6 +666,77 @@
                                 @enderror
 
                             </div>
+
+                            @if($role === 'manager')
+                                <div class="col-12 mb-4" wire:key="manager-assigned-employees">
+                                    <h6 class="text-dark mb-2">
+                                        Assigned Employees
+                                    </h6>
+                                    <p class="text-sm text-secondary mb-3">
+                                        Select which employees this manager can review and manage hours for.
+                                    </p>
+
+                                    <div class="manager-assignment-control">
+                                        <div class="input-group input-group-outline mb-3">
+                                            <input
+                                                type="search"
+                                                class="form-control"
+                                                placeholder="Search employee by name, email or employee ID"
+                                                wire:model.live.debounce.250ms="employeeSearch"
+                                            >
+                                        </div>
+
+                                        <div class="manager-assignment-selected mb-3">
+                                            @forelse($selectedAssignedEmployees as $employee)
+                                                <span class="manager-assignment-chip">
+                                                    {{ $employee->first_name }} {{ $employee->last_name }}
+                                                    <button
+                                                        type="button"
+                                                        wire:click="removeAssignedEmployee({{ $employee->id }})"
+                                                        aria-label="Remove {{ $employee->first_name }} {{ $employee->last_name }}"
+                                                    >
+                                                        <i class="material-icons">close</i>
+                                                    </button>
+                                                </span>
+                                            @empty
+                                                <span class="text-sm text-secondary">
+                                                    No employees assigned yet.
+                                                </span>
+                                            @endforelse
+                                        </div>
+
+                                        <div class="manager-assignment-dropdown">
+                                            @forelse($assignableEmployees as $employee)
+                                                <button
+                                                    type="button"
+                                                    class="manager-assignment-option"
+                                                    wire:click="addAssignedEmployee({{ $employee->id }})"
+                                                >
+                                                    <span>
+                                                        <strong>
+                                                            {{ $employee->first_name }} {{ $employee->last_name }}
+                                                        </strong>
+                                                        <small>
+                                                            {{ $employee->email }} - {{ ucfirst($employee->role) }}
+                                                        </small>
+                                                    </span>
+                                                    <i class="material-icons">add</i>
+                                                </button>
+                                            @empty
+                                                <div class="manager-assignment-empty">
+                                                    No matching employees.
+                                                </div>
+                                            @endforelse
+                                        </div>
+                                    </div>
+
+                                    @error('assigned_employee_ids')
+                                        <small class="text-danger d-block mt-1">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                            @endif
 
                             {{-- USER TYPE --}}
                             <div class="col-md-6 mb-4">

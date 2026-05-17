@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="{{ route('tables') }}">
+                    <a class="nav-link " href="{{ route('time-entry') }}">
                         <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons-round opacity-10">table_view</i>
                         </div>
@@ -38,9 +38,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="{{ route('virtual-reality') }}">
+                    <a class="nav-link " href="{{ route('approvals') }}">
                         <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons-round opacity-10">view_in_ar</i>
+                            <i class="material-icons-round opacity-10">fact_check</i>
                         </div>
                         <span class="nav-link-text me-1">الواقع الافتراضي</span>
                     </a>
@@ -907,7 +907,6 @@
                     </div>
                 </div>
                 <hr class="horizontal dark my-sm-4">
-                <a class="btn btn-outline-dark w-100" href="">View documentation</a>
                 <div class="w-100 text-center">
                     <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard"
                         data-icon="octicon-star" data-size="large" data-show-count="true"

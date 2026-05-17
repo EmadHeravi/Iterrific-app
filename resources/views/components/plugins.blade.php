@@ -66,7 +66,6 @@
                 </div>
             </div>
             <hr class="horizontal dark my-sm-4">
-            <a class="btn btn-outline-dark w-100" href="../../documentation/getting-started/installation.html">View documentation</a>
             <div class="w-100 text-center">
                 <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard-laravel-livewire"
                     data-icon="octicon-star" data-size="large" data-show-count="true"

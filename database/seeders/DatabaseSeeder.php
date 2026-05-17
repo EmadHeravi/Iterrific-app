@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(NetherlandsCalendarSeeder::class);
+
         User::updateOrCreate(
             [
                 'email' => 'admin@material.com'
