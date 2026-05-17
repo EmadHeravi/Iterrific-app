@@ -416,12 +416,21 @@ div.iti .iti__flag-container {
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked {
+    background-color: #fb8c00 !important;
+    background: #fb8c00 !important;
+    border-color: #fb8c00 !important;
+}
+
+.form-check-input.iterrific-checkbox:checked,
+.form-check-input.iterrific-checkbox[type="checkbox"]:checked {
+    background-color: #fb8c00 !important;
     background: #fb8c00 !important;
     border-color: #fb8c00 !important;
 }
 
 .form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:checked:focus,
-.form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:focus {
+.form-check:not(.form-switch) .form-check-input.iterrific-checkbox[type="checkbox"]:focus,
+.form-check-input.iterrific-checkbox:focus {
     border-color: #fb8c00 !important;
     box-shadow: 0 0 0 0.2rem rgba(251, 140, 0, 0.18) !important;
 }

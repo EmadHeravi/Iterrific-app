@@ -11,7 +11,7 @@
 
     <!-- Material Dashboard CSS (reuse styles) -->
     <link href="{{ asset('assets') }}/css/material-dashboard.css?v=3.0.0" rel="stylesheet">
-    <link href="{{ asset('assets/css/iterrific.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/iterrific.css') }}?v={{ filemtime(public_path('assets/css/iterrific.css')) }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @livewireStyles
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

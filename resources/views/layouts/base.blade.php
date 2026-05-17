@@ -66,7 +66,7 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets') }}/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css">
-    <link href="{{ asset('assets') }}/css/iterrific-dashboard.css" rel="stylesheet" />
+    <link href="{{ asset('assets/css/iterrific-dashboard.css') }}?v={{ filemtime(public_path('assets/css/iterrific-dashboard.css')) }}" rel="stylesheet" />
     @livewireStyles
 </head>
 
