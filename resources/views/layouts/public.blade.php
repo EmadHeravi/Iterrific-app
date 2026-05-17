@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php
+        $appName = \App\Models\AppSetting::valueFor('app_name', config('app.name', 'ITerrific'));
+        $faviconPath = \App\Models\AppSetting::valueFor('app_favicon_path', 'assets/img/favicon.png');
+        $faviconVersion = is_file(public_path($faviconPath)) ? filemtime(public_path($faviconPath)) : time();
+    @endphp
     <meta charset="utf-8">
-    <title>ITerrific B.V.</title>
+    <title>{{ $appName }}</title>
+    <link rel="icon" type="image/png" href="{{ asset($faviconPath) }}?v={{ $faviconVersion }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset($faviconPath) }}?v={{ $faviconVersion }}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,8 +21,6 @@
     <link href="{{ asset('assets/css/iterrific.css') }}?v={{ filemtime(public_path('assets/css/iterrific.css')) }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @livewireStyles
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    @livewireStyles
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
@@ -25,7 +30,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img
-                    src="{{ asset('assets/img/Logo.png') }}"
+                    src="{{ asset(\App\Models\AppSetting::valueFor('app_logo_path', 'assets/img/Logo.png')) }}"
                     alt="ITerrific"
                     height="45"
                 >
@@ -135,8 +140,10 @@
     <!-- Core JS -->
     <script src="{{ asset('assets') }}/js/core/bootstrap.min.js"></script>
     @livewireScripts
-    <!-- Turnstile-->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    @if(\App\Models\AppSetting::valueFor('captcha_provider', config('services.turnstile.site_key') ? 'turnstile' : 'none') === 'turnstile')
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    @endif
+    @stack('scripts')
 
 </body>
 </html>

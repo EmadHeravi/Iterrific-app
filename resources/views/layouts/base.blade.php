@@ -16,12 +16,17 @@
 <html lang='en' dir="{{ Route::currentRouteName() == 'rtl' ? 'rtl' : '' }}">
 
 <head>
+    @php
+        $appName = \App\Models\AppSetting::valueFor('app_name', config('app.name', 'ITerrific'));
+        $faviconPath = \App\Models\AppSetting::valueFor('app_favicon_path', 'assets/img/favicon.png');
+        $faviconVersion = is_file(public_path($faviconPath)) ? filemtime(public_path($faviconPath)) : time();
+    @endphp
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets') }}/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="{{ asset('assets') }}/img/favicon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset($faviconPath) }}?v={{ $faviconVersion }}">
+    <link rel="icon" type="image/png" href="{{ asset($faviconPath) }}?v={{ $faviconVersion }}">
     <title>
-        ITerrific
+        {{ $appName }}
     </title>
 
     <!-- Metas -->

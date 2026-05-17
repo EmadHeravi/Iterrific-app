@@ -78,6 +78,10 @@
 
                     @if($activeTab === 'accounts')
 
+                    @php
+                        $permissionPreviewUserId = session('permission_preview_user_id');
+                    @endphp
+
                     @error('delete_user')
                         <div class="alert alert-danger text-white text-sm" role="alert">
                             {{ $message }}
@@ -397,6 +401,22 @@
                                                         </i>
 
                                                     </button>
+                                                @endif
+
+                                                @if(auth()->user()->role === 'administrator' && ! $permissionPreviewUserId)
+                                                    @if($user->id !== auth()->id())
+                                                        <form method="POST" action="{{ route('permission-preview.set') }}" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="user_id" value="{{ $user->id }}">
+
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-outline-warning btn-sm mb-0 user-preview-switch-button"
+                                                            >
+                                                                Switch
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 @endif
 
                                             </td>

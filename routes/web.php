@@ -4,11 +4,13 @@ use App\Http\Livewire\Auth\ForgotPassword;
 use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Auth\ResetPassword;
+use App\Http\Livewire\Auth\TwoFactorChallenge;
 use App\Http\Livewire\Billing;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Dashboard;
 use App\Http\Livewire\Approvals;
 use App\Http\Livewire\ExampleLaravel\Calendars;
+use App\Http\Livewire\ExampleLaravel\GeneralSettings;
 use App\Http\Livewire\ExampleLaravel\UserManagement;
 use App\Http\Livewire\ExampleLaravel\Projects;
 use App\Http\Livewire\ExampleLaravel\UserProfile;
@@ -19,6 +21,7 @@ use App\Http\Livewire\StaticSignUp;
 use App\Http\Livewire\TimeEntry;
 use GuzzleHttp\Middleware;
 use App\Http\Controllers\ContactController;
+use App\Models\AppSetting;
 use App\Models\TimeEntry as TimeEntryModel;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -56,7 +59,9 @@ Route::get('reset-password/{id}', ResetPassword::class)->middleware('signed')->n
 
 Route::get('sign-up', Register::class)->middleware('guest')->name('register');
 Route::get('sign-in', Login::class)->middleware('guest')->name('login');
+Route::get('two-factor-challenge', TwoFactorChallenge::class)->middleware('auth')->name('two-factor.challenge');
 Route::post('/logout', function () {
+    request()->session()->forget('two_factor_verified');
 
     auth()->logout();
 
@@ -111,11 +116,13 @@ Route::post('/permission-preview', function (Request $request) {
 
     if (empty($data['user_id']) || (int) $data['user_id'] === auth()->id()) {
         session()->forget('permission_preview_user_id');
+
+        return back();
     } else {
         session(['permission_preview_user_id' => (int) $data['user_id']]);
     }
 
-    return back();
+    return redirect()->route('dashboard');
 })->middleware('auth')->name('permission-preview.set');
 
 Route::delete('/permission-preview', function () {
@@ -127,12 +134,13 @@ Route::delete('/permission-preview', function () {
 })->middleware('auth')->name('permission-preview.clear');
 
 
-Route::get('user-profile', UserProfile::class)->middleware(['auth', 'verified', 'permission:user-profile'])->name('user-profile');
-Route::get('user-management', UserManagement::class)->middleware(['auth', 'verified', 'permission:user-management'])->name('user-management');
-Route::get('projects', Projects::class)->middleware(['auth', 'verified', 'permission:projects'])->name('projects');
-Route::get('calendars', Calendars::class)->middleware(['auth', 'verified', 'permission:calendars'])->name('calendars');
+Route::get('user-profile', UserProfile::class)->middleware(['auth', 'verified', 'twofactor', 'permission:user-profile'])->name('user-profile');
+Route::get('general-settings', GeneralSettings::class)->middleware(['auth', 'verified', 'twofactor', 'permission:general-settings'])->name('general-settings');
+Route::get('user-management', UserManagement::class)->middleware(['auth', 'verified', 'twofactor', 'permission:user-management'])->name('user-management');
+Route::get('projects', Projects::class)->middleware(['auth', 'verified', 'twofactor', 'permission:projects'])->name('projects');
+Route::get('calendars', Calendars::class)->middleware(['auth', 'verified', 'twofactor', 'permission:calendars'])->name('calendars');
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified', 'twofactor']], function () {
 Route::get('dashboard', Dashboard::class)->middleware('permission:dashboard')->name('dashboard');
 Route::get('billing', Billing::class)->middleware('permission:billing')->name('billing');
 Route::get('profile', Profile::class)->middleware('permission:profile')->name('profile');
@@ -165,7 +173,7 @@ Route::get('time-entry/export', function (Request $request) {
 
     return Pdf::loadView('time-entry.export', [
         'entries' => $entries,
-        'logoPath' => extension_loaded('gd') ? public_path('assets/img/Logo.png') : null,
+        'logoPath' => extension_loaded('gd') ? AppSetting::publicPathFor('app_logo_path', 'assets/img/Logo.png') : null,
         'monthLabel' => $month->format('F Y'),
         'totalHours' => $entries->sum('hours'),
         'user' => auth()->user(),
@@ -211,7 +219,7 @@ Route::get('approvals/export', function (Request $request) {
 
     return Pdf::loadView('time-entry.export', [
         'entries' => $entries,
-        'logoPath' => extension_loaded('gd') ? public_path('assets/img/Logo.png') : null,
+        'logoPath' => extension_loaded('gd') ? AppSetting::publicPathFor('app_logo_path', 'assets/img/Logo.png') : null,
         'monthLabel' => $month->format('F Y'),
         'totalHours' => $entries->sum('hours'),
         'user' => $employee,

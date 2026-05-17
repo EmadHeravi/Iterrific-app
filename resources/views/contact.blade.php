@@ -1,6 +1,11 @@
 @extends('layouts.public')
 
 @section('content')
+@php
+    $captchaProvider = \App\Models\AppSetting::valueFor('captcha_provider', config('services.turnstile.site_key') ? 'turnstile' : 'none');
+    $turnstileSiteKey = \App\Models\AppSetting::valueFor('turnstile_site_key', config('services.turnstile.site_key'));
+    $recaptchaSiteKey = \App\Models\AppSetting::valueFor('recaptcha_site_key', config('services.recaptcha.site_key'));
+@endphp
 
 <!-- =======================
  Contact Hero
@@ -149,7 +154,7 @@
                         @endif
 
 
-                        <form method="POST" action="{{ route('contact.submit') }}">
+                        <form method="POST" action="{{ route('contact.submit') }}" id="contact-form">
                             @csrf
 
                             <div class="row">
@@ -197,13 +202,16 @@
                             ></textarea>
                         </div>
 
-                        <!-- CAPTCHA placeholder -->
-                        <div class="mb-4">
-                            <div
-                                class="cf-turnstile"
-                                data-sitekey="{{ config('services.turnstile.site_key') }}">
+                        @if($captchaProvider === 'turnstile' && $turnstileSiteKey)
+                            <div class="mb-4">
+                                <div
+                                    class="cf-turnstile"
+                                    data-sitekey="{{ $turnstileSiteKey }}">
+                                </div>
                             </div>
-                        </div>
+                        @elseif($captchaProvider === 'recaptcha' && $recaptchaSiteKey)
+                            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+                        @endif
 
                         <button type="submit" class="btn btn-warning">
                             Send Message
@@ -235,3 +243,26 @@
 </section>
 
 @endsection
+
+@if($captchaProvider === 'recaptcha' && $recaptchaSiteKey)
+    @push('scripts')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>
+        <script>
+            document.getElementById('contact-form')?.addEventListener('submit', function (event) {
+                if (this.dataset.recaptchaReady === '1') {
+                    return;
+                }
+
+                event.preventDefault();
+
+                grecaptcha.ready(() => {
+                    grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'contact' }).then((token) => {
+                        document.getElementById('g-recaptcha-response').value = token;
+                        this.dataset.recaptchaReady = '1';
+                        this.submit();
+                    });
+                });
+            });
+        </script>
+    @endpush
+@endif

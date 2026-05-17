@@ -105,11 +105,19 @@ return new class extends Migration
 
     private function defaultCanRead(string $role, string $module): bool
     {
+        if ($module === 'general-settings') {
+            return $role === 'administrator';
+        }
+
         return true;
     }
 
     private function defaultCanWrite(string $role, string $module): bool
     {
+        if ($module === 'general-settings') {
+            return $role === 'administrator';
+        }
+
         if ($role === 'administrator') {
             return true;
         }

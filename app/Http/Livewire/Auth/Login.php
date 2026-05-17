@@ -2,14 +2,22 @@
 
 namespace App\Http\Livewire\Auth;
 
+use App\Support\CaptchaValidator;
+use App\Support\TwoFactorCode;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use RuntimeException;
 
 class Login extends Component
 {
 
     public $email='';
     public $password='';
+    public bool $remember = false;
+    public $captcha_token = '';
+
+    private const CAPTCHA_FAILURE_THRESHOLD = 3;
 
     protected $rules= [
         'email' => 'required|email',
@@ -19,51 +27,80 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.auth.login')->layout('layouts.public');
+        $captchaProvider = CaptchaValidator::provider();
+
+        return view('livewire.auth.login', [
+            'captchaProvider' => $captchaProvider,
+            'captchaSiteKey' => CaptchaValidator::siteKey($captchaProvider),
+            'requiresCaptcha' => $this->requiresCaptcha(),
+        ])->layout('layouts.public');
     }
 
     public function mount() {
-      
-        $this->fill(['email' => 'admin@material.com', 'password' => 'secret']);    
     }
     
     public function store()
-{
-    $attributes = $this->validate();
+    {
+        $attributes = $this->validate();
 
-    \Log::info('LOGIN ATTEMPT', [
-        'email' => $this->email,
-        'session_id_before' => session()->getId(),
-        'is_https' => request()->isSecure(),
-        'scheme' => request()->getScheme(),
-        'host' => request()->getHost(),
-        'cookie_secure' => config('session.secure'),
-        'session_domain' => config('session.domain'),
-    ]);
+        if ($this->requiresCaptcha() && ! CaptchaValidator::verify($this->captcha_token, request()->ip())) {
+            $this->captcha_token = '';
+            $this->addError('captcha_token', 'CAPTCHA verification failed.');
 
-    if (! auth()->attempt($attributes)) {
+            return null;
+        }
 
-            \Log::warning('LOGIN FAILED', [
-                'email' => $this->email,
-            ]);
+        if (! auth()->attempt($attributes, $this->remember)) {
+            $this->incrementFailedAttempts();
+            $this->captcha_token = '';
 
             throw ValidationException::withMessages([
                 'email' => 'Your provided credentials could not be verified.'
             ]);
         }
 
-        \Log::info('LOGIN SUCCESS BEFORE REGENERATE', [
-            'user_id' => auth()->id(),
-            'session_id_before_regenerate' => session()->getId(),
-        ]);
-
         session()->regenerate();
+        $this->clearFailedAttempts();
 
-        \Log::info('LOGIN SUCCESS AFTER REGENERATE', [
-            'user_id' => auth()->id(),
-            'session_id_after_regenerate' => session()->getId(),
-        ]);
+        session(['two_factor_verified' => false]);
 
-        return redirect('/dashboard');
+        try {
+            TwoFactorCode::send(auth()->user());
+        } catch (RuntimeException $exception) {
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'email' => 'Unable to send the two-factor security code right now.',
+            ]);
+        }
+
+        return redirect()->route('two-factor.challenge');
+    }
+
+    public function requiresCaptcha(): bool
+    {
+        return CaptchaValidator::provider() !== 'none'
+            && Cache::get($this->failureCacheKey(), 0) >= self::CAPTCHA_FAILURE_THRESHOLD;
+    }
+
+    private function incrementFailedAttempts(): void
+    {
+        $key = $this->failureCacheKey();
+        $attempts = Cache::get($key, 0) + 1;
+
+        Cache::put($key, $attempts, now()->addMinutes(30));
+    }
+
+    private function clearFailedAttempts(): void
+    {
+        Cache::forget($this->failureCacheKey());
+    }
+
+    private function failureCacheKey(): string
+    {
+        return 'login_failures.' . sha1(strtolower(trim($this->email)) . '|' . request()->ip());
     }
 }

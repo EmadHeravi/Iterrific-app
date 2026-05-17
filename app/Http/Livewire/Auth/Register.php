@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Auth;
 
 use App\Models\User;
+use App\Support\CaptchaValidator;
 use Illuminate\Auth\Events\Registered;
 use Livewire\Component;
 
@@ -13,6 +14,7 @@ class Register extends Component
     public $last_name = '';
     public $email = '';
     public $password = '';
+    public $captcha_token = '';
 
     protected $rules=[
     'first_name' => 'required|min:3',
@@ -25,6 +27,13 @@ class Register extends Component
 
         $attributes = $this->validate();
 
+        if (! CaptchaValidator::verify($this->captcha_token, request()->ip())) {
+            $this->captcha_token = '';
+            $this->addError('captcha_token', 'CAPTCHA verification failed.');
+
+            return null;
+        }
+
         $user = User::create($attributes);
 
         event(new Registered($user));
@@ -36,7 +45,12 @@ class Register extends Component
 
     public function render()
     {
-        return view('livewire.auth.register')
+        $captchaProvider = CaptchaValidator::provider();
+
+        return view('livewire.auth.register', [
+            'captchaProvider' => $captchaProvider,
+            'captchaSiteKey' => CaptchaValidator::siteKey($captchaProvider),
+        ])
             ->layout('layouts.public');
     }
 }

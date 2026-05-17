@@ -18,7 +18,7 @@
         >
 
             <img
-                src="{{ asset('assets/img/Logo.png') }}"
+                src="{{ asset(\App\Models\AppSetting::valueFor('app_logo_path', 'assets/img/Logo.png')) }}"
                 class="navbar-brand-img h-100"
                 alt="ITerrific Logo"
             >
@@ -80,7 +80,7 @@
 
             @endforeach
 
-            @if(auth()->user()->canRead('user-management') || auth()->user()->canRead('projects') || auth()->user()->canRead('calendars'))
+            @if((auth()->user()->role === 'administrator' && auth()->user()->canRead('general-settings')) || auth()->user()->canRead('user-management') || auth()->user()->canRead('projects') || auth()->user()->canRead('calendars'))
             {{-- LARAVEL EXAMPLES --}}
             <li class="nav-item mt-3">
 
@@ -94,6 +94,32 @@
             </li>
             @endif
 
+
+            {{-- GENERAL SETTINGS --}}
+            @if(auth()->user()->role === 'administrator' && auth()->user()->canRead('general-settings'))
+            <li class="nav-item settings-sub-item">
+
+                <a
+                    class="nav-link text-dark settings-sub-link {{ Route::currentRouteName() == 'general-settings' ? 'active bg-gradient-warning text-white' : '' }}"
+                    href="{{ route('general-settings') }}"
+                >
+
+                    <div class="settings-sub-icon text-center me-2 d-flex align-items-center justify-content-center">
+
+                        <i class="material-icons opacity-10">
+                            tune
+                        </i>
+
+                    </div>
+
+                    <span class="nav-link-text ms-1">
+                        General
+                    </span>
+
+                </a>
+
+            </li>
+            @endif
 
             {{-- USER MANAGEMENT --}}
             @if(auth()->user()->canRead('user-management'))
@@ -254,12 +280,9 @@
     {{-- SIDEBAR FOOTER --}}
     <div class="sidenav-footer position-absolute w-100 bottom-0">
 
-        @if(auth()->user()->role === 'administrator')
+        @if(auth()->user()->role === 'administrator' && session('permission_preview_user_id'))
             @php
-                $permissionPreviewUserId = session('permission_preview_user_id');
-                $permissionPreviewUsers = \App\Models\User::orderBy('first_name')
-                    ->orderBy('last_name')
-                    ->get(['id', 'first_name', 'last_name', 'email', 'role']);
+                $permissionPreviewUser = \App\Models\User::find(session('permission_preview_user_id'));
             @endphp
 
             <div class="mx-3 mb-3 permission-preview-card">
@@ -269,46 +292,22 @@
                     </div>
                     <div class="ms-2">
                         <p class="text-xs text-uppercase font-weight-bolder mb-0 text-dark">
-                            Permission Preview
+                            Preview Mode
                         </p>
                         <p class="text-xxs text-secondary mb-0">
-                            View dashboard as another user
+                            {{ $permissionPreviewUser?->full_name ?: $permissionPreviewUser?->email ?: 'Another user' }}
                         </p>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('permission-preview.set') }}">
+                <form method="POST" action="{{ route('permission-preview.clear') }}">
                     @csrf
-                    <select
-                        name="user_id"
-                        class="form-control form-control-sm permission-preview-select"
-                        onchange="this.form.submit()"
-                    >
-                        <option value="">
-                            View as myself
-                        </option>
+                    @method('DELETE')
 
-                        @foreach($permissionPreviewUsers as $previewUser)
-                            <option
-                                value="{{ $previewUser->id }}"
-                                @selected((int) $permissionPreviewUserId === $previewUser->id)
-                            >
-                                {{ $previewUser->full_name ?: $previewUser->email }} - {{ ucfirst($previewUser->role) }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm w-100 mb-0">
+                        Return to Admin View
+                    </button>
                 </form>
-
-                @if($permissionPreviewUserId)
-                    <form method="POST" action="{{ route('permission-preview.clear') }}" class="mt-2">
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100 mb-0">
-                            Reset to Admin View
-                        </button>
-                    </form>
-                @endif
             </div>
         @endif
 

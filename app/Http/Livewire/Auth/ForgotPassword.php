@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Auth;
 
 use App\Models\User;
 use App\Services\MicrosoftGraphMailer;
+use App\Support\CaptchaValidator;
 use Illuminate\Support\Facades\URL;
 use Livewire\Component;
 use RuntimeException;
@@ -13,6 +14,7 @@ class ForgotPassword extends Component
     public $email='';
     public $emailSent = false;
     public $sentEmail = '';
+    public $captcha_token = '';
     
     protected $rules = [
         'email' => 'required|email',
@@ -20,7 +22,12 @@ class ForgotPassword extends Component
 
     public function render()
     {
-        return view('livewire.auth.forgot-password')
+        $captchaProvider = CaptchaValidator::provider();
+
+        return view('livewire.auth.forgot-password', [
+            'captchaProvider' => $captchaProvider,
+            'captchaSiteKey' => CaptchaValidator::siteKey($captchaProvider),
+        ])
             ->layout('layouts.public');
     }
 
@@ -32,6 +39,13 @@ class ForgotPassword extends Component
         else{
 
         $this->validate();
+
+        if (! CaptchaValidator::verify($this->captcha_token, request()->ip())) {
+            $this->captcha_token = '';
+            $this->addError('captcha_token', 'CAPTCHA verification failed.');
+
+            return null;
+        }
 
         $user = User::where('email', $this->email)->first();
 

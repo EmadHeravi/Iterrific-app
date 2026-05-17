@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AppSetting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -15,7 +16,7 @@ class MicrosoftGraphMailer
         ?string $replyToEmail = null,
         ?string $replyToName = null
     ): void {
-        $from = (string) config('services.microsoft_graph_mail.mail_from');
+        $from = $this->setting('ms_mail_from', 'services.microsoft_graph_mail.mail_from');
 
         if ($from === '') {
             throw new RuntimeException('MS_MAIL_FROM is not configured.');
@@ -50,9 +51,9 @@ class MicrosoftGraphMailer
             ];
         }
 
-        $logoPath = public_path('assets/img/Logo.png');
+        $logoPath = AppSetting::publicPathFor('app_logo_path', 'assets/img/Logo.png');
 
-        if (is_file($logoPath)) {
+        if ($logoPath && is_file($logoPath)) {
             $payload['message']['attachments'] = [
                 [
                     '@odata.type' => '#microsoft.graph.fileAttachment',
@@ -82,9 +83,9 @@ class MicrosoftGraphMailer
 
     private function accessToken(): string
     {
-        $tenantId = (string) config('services.microsoft_graph_mail.tenant_id');
-        $clientId = (string) config('services.microsoft_graph_mail.client_id');
-        $clientSecret = (string) config('services.microsoft_graph_mail.client_secret');
+        $tenantId = $this->setting('ms_tenant_id', 'services.microsoft_graph_mail.tenant_id');
+        $clientId = $this->setting('ms_client_id', 'services.microsoft_graph_mail.client_id');
+        $clientSecret = $this->setting('ms_client_secret', 'services.microsoft_graph_mail.client_secret');
 
         if ($tenantId === '' || $clientId === '' || $clientSecret === '') {
             throw new RuntimeException('Microsoft Graph mail credentials are not configured.');
@@ -110,5 +111,15 @@ class MicrosoftGraphMailer
         }
 
         return (string) $response->json('access_token');
+    }
+
+    public function fromAddress(): string
+    {
+        return $this->setting('ms_mail_from', 'services.microsoft_graph_mail.mail_from');
+    }
+
+    private function setting(string $settingKey, string $configKey): string
+    {
+        return (string) AppSetting::valueFor($settingKey, config($configKey, ''));
     }
 }

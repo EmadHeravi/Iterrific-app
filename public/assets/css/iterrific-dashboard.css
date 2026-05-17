@@ -220,6 +220,14 @@ div.iti .iti__flag-container {
     color: #344767;
 }
 
+.user-preview-switch-button {
+    border-radius: 0.375rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 4.75rem;
+    padding: 0.35rem 0.6rem;
+}
+
 .calendar-filter-control {
     min-width: 16rem;
 }
@@ -371,6 +379,187 @@ div.iti .iti__flag-container {
 
 .approval-description {
     max-width: 20rem;
+}
+
+.general-settings-grid {
+    align-items: stretch;
+}
+
+.general-settings-section {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.general-settings-section .form-control:disabled {
+    background-color: #f8f9fa;
+    color: #7b809a;
+}
+
+.general-branding-section {
+    background: #ffffff;
+}
+
+.general-browser-preview {
+    background: #ffffff;
+    border: 1px solid #d2d6da;
+    border-radius: 0.5rem;
+    box-shadow: inset 0 0 0 1px rgba(52, 71, 103, 0.02);
+    min-height: 13rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.general-browser-preview-label {
+    background: #ffffff;
+    border: 1px solid #d2d6da;
+    border-radius: 999px;
+    color: #67748e;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    padding: 0.25rem 0.65rem;
+    position: absolute;
+    right: 0.75rem;
+    text-transform: uppercase;
+    top: 0.45rem;
+    z-index: 1;
+}
+
+.general-browser-topbar {
+    align-items: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid #d2d6da;
+    display: flex;
+    gap: 0.4rem;
+    height: 2.4rem;
+    padding: 0 0.85rem;
+}
+
+.general-browser-topbar span {
+    background: #d2d6da;
+    border-radius: 999px;
+    display: block;
+    height: 0.55rem;
+    width: 0.55rem;
+}
+
+.general-browser-tab {
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    color: #344767;
+    display: flex;
+    font-size: 0.875rem;
+    font-weight: 600;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 1rem;
+}
+
+.general-browser-tab img {
+    height: 1.25rem;
+    object-fit: contain;
+    width: 1.25rem;
+}
+
+.general-browser-page {
+    align-items: center;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    min-height: 7.5rem;
+    padding: 1.25rem;
+}
+
+.general-browser-page img {
+    max-height: 4rem;
+    max-width: min(18rem, 80%);
+    object-fit: contain;
+}
+
+.general-branding-upload-panel {
+    align-items: center;
+    border: 1px solid #d2d6da;
+    border-radius: 0.5rem;
+    display: flex;
+    gap: 1rem;
+    min-height: 6.5rem;
+    padding: 1rem;
+}
+
+.general-file-input {
+    border: 1px solid #d2d6da !important;
+    border-radius: 0.5rem !important;
+    color: #344767;
+    height: auto;
+    padding: 0 !important;
+}
+
+.general-file-input::file-selector-button {
+    background: #fb8c00;
+    border: 0;
+    border-right: 1px solid #d2d6da;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: 0.85rem;
+    min-height: 2.55rem;
+    padding: 0 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.general-file-input::file-selector-button:hover {
+    background: #f57c00;
+}
+
+.general-file-input::-webkit-file-upload-button {
+    background: #fb8c00;
+    border: 0;
+    border-right: 1px solid #d2d6da;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: 0.85rem;
+    min-height: 2.55rem;
+    padding: 0 1rem;
+}
+
+.general-logo-preview {
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    display: flex;
+    height: 4rem;
+    justify-content: center;
+    min-width: 9rem;
+    padding: 0.5rem;
+    width: 9rem;
+}
+
+.general-logo-preview img {
+    max-height: 3rem;
+    max-width: 8rem;
+    object-fit: contain;
+}
+
+.general-favicon-preview {
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    display: flex;
+    height: 4rem;
+    justify-content: center;
+    min-width: 4rem;
+    width: 4rem;
+}
+
+.general-favicon-preview img {
+    height: 2.5rem;
+    object-fit: contain;
+    width: 2.5rem;
 }
 
 .profile-avatar-panel {

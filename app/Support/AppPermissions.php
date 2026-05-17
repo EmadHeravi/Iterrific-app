@@ -13,6 +13,7 @@ class AppPermissions
             'billing' => 'Billing',
             'notifications' => 'Notifications',
             'profile' => 'Profile',
+            'general-settings' => 'General Settings',
             'user-management' => 'User Management',
             'projects' => 'Projects',
             'calendars' => 'Calendars',

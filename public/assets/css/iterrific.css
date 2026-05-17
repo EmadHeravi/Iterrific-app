@@ -89,3 +89,100 @@ footer a:hover {
     right: -40px;
 }
 
+.iterrific-auth-shell {
+    background-image: url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1920&q=80');
+    background-position: center;
+    background-size: cover;
+    min-height: 100vh;
+    position: relative;
+}
+
+.iterrific-auth-overlay {
+    background: linear-gradient(90deg, rgba(15, 28, 48, 0.82), rgba(15, 28, 48, 0.46));
+    inset: 0;
+    position: absolute;
+}
+
+.iterrific-auth-copy {
+    color: #ffffff;
+    max-width: 34rem;
+}
+
+.iterrific-auth-logo {
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    max-height: 4rem;
+    max-width: 13rem;
+    padding: 0.65rem 0.85rem;
+}
+
+.iterrific-auth-copy h1 {
+    color: #ffffff;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.08;
+    margin-bottom: 1rem;
+}
+
+.iterrific-auth-copy p {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.iterrific-auth-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 0.75rem;
+    box-shadow: 0 18px 50px rgba(15, 28, 48, 0.24);
+    padding: 1.75rem;
+}
+
+.iterrific-auth-card-header {
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+}
+
+.iterrific-auth-card-header h4 {
+    color: #1f3b64;
+    font-weight: 800;
+}
+
+.iterrific-auth-card-header p {
+    color: #67748e;
+    font-size: 0.9rem;
+}
+
+.iterrific-auth-icon {
+    align-items: center;
+    background: #fb8c00;
+    border-radius: 0.55rem;
+    box-shadow: 0 6px 16px rgba(251, 140, 0, 0.28);
+    display: flex;
+    height: 3.2rem;
+    justify-content: center;
+    min-width: 3.2rem;
+    width: 3.2rem;
+}
+
+.iterrific-auth-code {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.35rem;
+    text-align: center;
+}
+
+@media (max-width: 991.98px) {
+    .iterrific-auth-overlay {
+        background: rgba(15, 28, 48, 0.68);
+    }
+
+    .iterrific-auth-card {
+        padding: 1.35rem;
+    }
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\MicrosoftGraphMailer;
+use App\Support\CaptchaValidator;
 use Illuminate\Http\Request;
 use RuntimeException;
 
@@ -17,16 +18,7 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        $captchaResponse = \Illuminate\Support\Facades\Http::asForm()->post(
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-            [
-                'secret' => config('services.turnstile.secret_key'),
-                'response' => $request->input('cf-turnstile-response'),
-                'remoteip' => $request->ip(),
-            ]
-        );
-
-        if (! ($captchaResponse->json('success') ?? false)) {
+        if (! $this->captchaIsValid($request)) {
             return back()
                 ->withErrors([
                     'captcha' => 'CAPTCHA verification failed.'
@@ -43,7 +35,7 @@ class ContactController extends Controller
 
         try {
             $mailer->send(
-                (string) env('MS_MAIL_FROM'),
+                $mailer->fromAddress(),
                 'New Contact Request - ITerrific Website',
                 $html,
                 $request->email,
@@ -63,5 +55,14 @@ class ContactController extends Controller
             'success',
             'Thank you! Your message has been sent successfully.'
         );
+    }
+
+    private function captchaIsValid(Request $request): bool
+    {
+        $token = CaptchaValidator::provider() === 'recaptcha'
+            ? $request->input('g-recaptcha-response')
+            : $request->input('cf-turnstile-response');
+
+        return CaptchaValidator::verify($token, $request->ip());
     }
 }
