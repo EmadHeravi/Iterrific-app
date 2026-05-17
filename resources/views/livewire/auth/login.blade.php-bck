@@ -50,8 +50,15 @@
 
                                     <div class="input-group input-group-outline mt-3 @if(strlen($password ?? '') > 0) is-filled @endif">
                                         <label class="form-label">Password</label>
-                                        <input wire:model.live="password" type="password" class="form-control"
-                                             >
+                                        <input wire:model.live="password" type="password" class="form-control auth-password-input">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary auth-password-toggle mb-0"
+                                            aria-label="Show password"
+                                            onclick="const input = this.closest('.input-group').querySelector('.auth-password-input'); const icon = this.querySelector('.material-icons'); const visible = input.type === 'text'; input.type = visible ? 'password' : 'text'; icon.textContent = visible ? 'visibility' : 'visibility_off'; this.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');"
+                                        >
+                                            <span class="material-icons">visibility</span>
+                                        </button>
                                     </div>
                                     @error('password')
                                     <p class='text-danger inputerror'>{{ $message }} </p>

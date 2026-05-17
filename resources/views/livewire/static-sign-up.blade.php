@@ -29,7 +29,15 @@
                                             </div>
                                             <div class="input-group input-group-outline mb-3">
                                                 <label class="form-label">Password</label>
-                                                <input type="password" class="form-control" name="password" required>
+                                                <input type="password" class="form-control auth-password-input" name="password" required>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-secondary auth-password-toggle mb-0"
+                                                    aria-label="Show password"
+                                                    onclick="const input = this.closest('.input-group').querySelector('.auth-password-input'); const icon = this.querySelector('.material-icons'); const visible = input.type === 'text'; input.type = visible ? 'password' : 'text'; icon.textContent = visible ? 'visibility' : 'visibility_off'; this.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');"
+                                                >
+                                                    <span class="material-icons">visibility</span>
+                                                </button>
                                             </div>
                                             <div class="form-check form-check-info text-start ps-0">
                                                 <input class="form-check-input iterrific-checkbox" type="checkbox" value=""

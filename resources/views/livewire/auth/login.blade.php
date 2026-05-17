@@ -28,13 +28,23 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Password</label>
-                                    <input
-                                        wire:model="password"
-                                        type="password"
-                                        class="form-control border"
-                                        placeholder=" Password"
-                                        required
-                                    >
+                                    <div class="input-group auth-password-field">
+                                        <input
+                                            wire:model="password"
+                                            type="password"
+                                            class="form-control border auth-password-input"
+                                            placeholder=" Password"
+                                            required
+                                        >
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary auth-password-toggle mb-0"
+                                            aria-label="Show password"
+                                            onclick="const input = this.closest('.auth-password-field').querySelector('.auth-password-input'); const icon = this.querySelector('.material-icons'); const visible = input.type === 'text'; input.type = visible ? 'password' : 'text'; icon.textContent = visible ? 'visibility' : 'visibility_off'; this.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');"
+                                        >
+                                            <span class="material-icons">visibility</span>
+                                        </button>
+                                    </div>
                                     @error('password')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
