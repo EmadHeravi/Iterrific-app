@@ -247,24 +247,24 @@
                     <div class="col-lg-4 mb-4">
                         <div class="billing-info-box h-100">
                             <p class="text-xs text-secondary mb-1">Billing Profile</p>
-                            <h6 class="mb-0">{{ $user->full_name ?: $user->email }}</h6>
-                            <p class="text-sm text-secondary mb-0">{{ ucfirst($user->user_type) }} employee</p>
+                            <h6 class="mb-0">{{ $billingUser->full_name ?: $billingUser->email }}</h6>
+                            <p class="text-sm text-secondary mb-0">{{ ucfirst($billingUser->user_type) }} employee</p>
                         </div>
                     </div>
 
                     <div class="col-lg-4 mb-4">
                         <div class="billing-info-box h-100">
                             <p class="text-xs text-secondary mb-1">Company</p>
-                            <h6 class="mb-0">{{ $user->company_name ?: '-' }}</h6>
-                            <p class="text-sm text-secondary mb-0">{{ $user->vat_number ?: 'No VAT number' }}</p>
+                            <h6 class="mb-0">{{ $billingUser->company_name ?: '-' }}</h6>
+                            <p class="text-sm text-secondary mb-0">{{ $billingUser->vat_number ?: 'No VAT number' }}</p>
                         </div>
                     </div>
 
                     <div class="col-lg-4 mb-4">
                         <div class="billing-info-box h-100">
                             <p class="text-xs text-secondary mb-1">Bank Account</p>
-                            <h6 class="mb-0">{{ $user->bank_name ?: '-' }}</h6>
-                            <p class="text-sm text-secondary mb-0">{{ $user->iban ?: 'No IBAN on profile' }}</p>
+                            <h6 class="mb-0">{{ $billingUser->bank_name ?: '-' }}</h6>
+                            <p class="text-sm text-secondary mb-0">{{ $billingUser->iban ?: 'No IBAN on profile' }}</p>
                         </div>
                     </div>
                 </div>
