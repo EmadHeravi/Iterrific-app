@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Calendar;
 use App\Models\Project;
 use App\Models\TimeEntry as TimeEntryModel;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Livewire\Component;
 
@@ -97,7 +98,7 @@ class TimeEntry extends Component
         $calendar = $this->matchingCalendar($entryDate);
 
         $payload = [
-            'user_id' => auth()->id(),
+            'user_id' => $this->timeEntryUser()->id,
             'project_id' => $this->project_id,
             'entry_date' => $entryDate->toDateString(),
             'hours' => $this->hours,
@@ -170,7 +171,7 @@ class TimeEntry extends Component
 
     private function assignedProjectsQuery()
     {
-        return auth()->user()
+        return $this->timeEntryUser()
             ->projects()
             ->where('projects.status', 'active')
             ->wherePivot('active', true);
@@ -207,24 +208,26 @@ class TimeEntry extends Component
     public function canEditTimeEntry(TimeEntryModel $timeEntry): bool
     {
         $user = auth()->user();
+        $timeEntryUser = $this->timeEntryUser();
 
         if ($user->role === 'administrator') {
-            return true;
+            return $timeEntry->user_id === $timeEntryUser->id;
         }
 
         if ($user->role === 'manager') {
             return ($timeEntry->status === 'approved' && $user->managesEmployee($timeEntry->user_id))
-                || ($timeEntry->user_id === $user->id && $timeEntry->status !== 'approved');
+                || ($timeEntry->user_id === $timeEntryUser->id && $timeEntry->status !== 'approved');
         }
 
-        return $timeEntry->user_id === $user->id && $timeEntry->status !== 'approved';
+        return $timeEntry->user_id === $timeEntryUser->id && $timeEntry->status !== 'approved';
     }
 
     private function canEditApprovedEntry(TimeEntryModel $timeEntry): bool
     {
         $user = auth()->user();
+        $timeEntryUser = $this->timeEntryUser();
 
-        return $user->role === 'administrator'
+        return ($user->role === 'administrator' && $timeEntry->user_id === $timeEntryUser->id)
             || (
                 $user->role === 'manager'
                 && $timeEntry->status === 'approved'
@@ -243,6 +246,7 @@ class TimeEntry extends Component
 
     public function render()
     {
+        $timeEntryUser = $this->timeEntryUser();
         $selectedYear = (int) ($this->yearFilter ?: now()->format('Y'));
         $selectedMonth = (int) ($this->monthFilter ?: now()->format('m'));
         $month = Carbon::create($selectedYear, $selectedMonth, 1);
@@ -250,7 +254,7 @@ class TimeEntry extends Component
         $endOfMonth = $month->copy()->endOfMonth();
 
         $timeEntries = TimeEntryModel::with(['project', 'calendar'])
-            ->where('user_id', auth()->id())
+            ->where('user_id', $timeEntryUser->id)
             ->whereBetween('entry_date', [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
             ->orderByDesc('entry_date')
             ->latest()
@@ -295,13 +299,14 @@ class TimeEntry extends Component
             'submittedHours' => $timeEntries->where('status', 'submitted')->sum('hours'),
             'approvedHours' => $timeEntries->where('status', 'approved')->sum('hours'),
             'draftHours' => $timeEntries->where('status', 'draft')->sum('hours'),
+            'timeEntryUser' => $timeEntryUser,
         ]);
     }
 
     private function yearOptions(): array
     {
         $currentYear = (int) now()->format('Y');
-        $entryYears = TimeEntryModel::where('user_id', auth()->id())
+        $entryYears = TimeEntryModel::where('user_id', $this->timeEntryUser()->id)
             ->pluck('entry_date')
             ->map(fn ($date) => (int) Carbon::parse($date)->format('Y'))
             ->unique()
@@ -315,6 +320,23 @@ class TimeEntry extends Component
             ->sortDesc()
             ->values()
             ->all();
+    }
+
+    private function timeEntryUser(): User
+    {
+        $actor = auth()->user();
+
+        if ($actor->role !== 'administrator') {
+            return $actor;
+        }
+
+        $previewUserId = session('permission_preview_user_id');
+
+        if (! $previewUserId || (int) $previewUserId === (int) $actor->id) {
+            return $actor;
+        }
+
+        return User::find($previewUserId) ?: $actor;
     }
 
     private function monthOptions(): array

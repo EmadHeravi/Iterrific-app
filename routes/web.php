@@ -148,6 +148,12 @@ Route::get('time-entry', TimeEntry::class)->middleware('permission:time-entry')-
 Route::get('time-entry/export', function (Request $request) {
     abort_unless(auth()->user()->canRead('time-entry'), 403);
 
+    $exportUser = auth()->user();
+
+    if ($exportUser->role === 'administrator' && session('permission_preview_user_id')) {
+        $exportUser = User::find(session('permission_preview_user_id')) ?: $exportUser;
+    }
+
     $data = $request->validate([
         'year' => 'required|integer|min:2000|max:2100',
         'month' => 'required|integer|min:1|max:12',
@@ -158,7 +164,7 @@ Route::get('time-entry/export', function (Request $request) {
     $endOfMonth = $month->copy()->endOfMonth();
 
     $entries = TimeEntryModel::with(['project', 'calendar'])
-        ->where('user_id', auth()->id())
+        ->where('user_id', $exportUser->id)
         ->whereBetween('entry_date', [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
         ->where('hours', '>', 0)
         ->orderBy('entry_date')
@@ -167,7 +173,7 @@ Route::get('time-entry/export', function (Request $request) {
 
     $fileName = sprintf(
         'time-entry-%s-%s.pdf',
-        (string) str(auth()->user()->full_name ?: auth()->user()->email)->slug(),
+        (string) str($exportUser->full_name ?: $exportUser->email)->slug(),
         $month->format('Y-m')
     );
 
@@ -176,7 +182,7 @@ Route::get('time-entry/export', function (Request $request) {
         'logoPath' => extension_loaded('gd') ? AppSetting::publicPathFor('app_logo_path', 'assets/img/Logo.png') : null,
         'monthLabel' => $month->format('F Y'),
         'totalHours' => $entries->sum('hours'),
-        'user' => auth()->user(),
+        'user' => $exportUser,
     ])->setPaper('a4')->download($fileName);
 })->middleware('permission:time-entry')->name('time-entry.export');
 Route::redirect('tables', 'time-entry');

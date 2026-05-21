@@ -23,7 +23,7 @@
                                     Time Entry
                                 </h5>
                                 <p class="mb-0 font-weight-normal text-sm">
-                                    Register and review hours for each day of the selected month.
+                                    Register and review hours for {{ $timeEntryUser->full_name ?: $timeEntryUser->email }}.
                                 </p>
                             </div>
                         </div>
