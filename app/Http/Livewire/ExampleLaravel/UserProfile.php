@@ -81,7 +81,7 @@ class UserProfile extends Component
 
     public function mount()
     {
-        $this->user = auth()->user();
+        $this->user = $this->profileUser();
         $this->fillFromUser();
     }
 
@@ -115,7 +115,7 @@ class UserProfile extends Component
         $this->validate();
 
         if (env('IS_DEMO') && $this->user->id == 1) {
-            if (auth()->user()->email == $this->email) {
+            if ($this->user->email == $this->email) {
                 $this->fillUser();
                 $this->user->save();
                 $this->reset([
@@ -221,5 +221,22 @@ class UserProfile extends Component
     public function render()
     {
         return view('livewire.example-laravel.user-profile');
+    }
+
+    private function profileUser(): User
+    {
+        $actor = auth()->user();
+
+        if ($actor->role !== 'administrator') {
+            return $actor;
+        }
+
+        $previewUserId = session('permission_preview_user_id');
+
+        if (! $previewUserId || (int) $previewUserId === (int) $actor->id) {
+            return $actor;
+        }
+
+        return User::find($previewUserId) ?: $actor;
     }
 }

@@ -25,23 +25,23 @@ class Dashboard extends Component
             ->whereBetween('entry_date', $monthRange)
             ->get();
 
-        $approvalEntries = $actor->canRead('approvals')
+        $approvalEntries = $user->canRead('approvals')
             ? $this->approvalScope($user)->whereBetween('entry_date', $monthRange)->get()
             : collect();
 
-        $billingSummary = $actor->canRead('billing')
+        $billingSummary = $user->canRead('billing')
             ? $this->billingSummary($user, $monthRange)
             : null;
 
         return view('livewire.dashboard', [
             'assignedProjects' => $this->assignedProjects($user),
             'billingSummary' => $billingSummary,
-            'canReadApprovals' => $actor->canRead('approvals'),
-            'canReadBilling' => $actor->canRead('billing'),
-            'canReadCalendars' => $actor->canRead('calendars'),
-            'canReadProjects' => $actor->canRead('projects'),
-            'canReadTimeEntry' => $actor->canRead('time-entry'),
-            'canReadUserManagement' => $actor->canRead('user-management'),
+            'canReadApprovals' => $user->canRead('approvals'),
+            'canReadBilling' => $user->canRead('billing'),
+            'canReadCalendars' => $user->canRead('calendars'),
+            'canReadProjects' => $user->canRead('projects'),
+            'canReadTimeEntry' => $user->canRead('time-entry'),
+            'canReadUserManagement' => $user->canRead('user-management'),
             'monthLabel' => $month->format('F Y'),
             'ownApprovedHours' => $ownEntries->where('status', 'approved')->sum('hours'),
             'ownDraftHours' => $ownEntries->where('status', 'draft')->sum('hours'),

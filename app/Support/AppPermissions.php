@@ -12,7 +12,6 @@ class AppPermissions
             'approvals' => 'Approvals',
             'billing' => 'Billing',
             'notifications' => 'Notifications',
-            'profile' => 'Profile',
             'general-settings' => 'General Settings',
             'user-management' => 'User Management',
             'projects' => 'Projects',

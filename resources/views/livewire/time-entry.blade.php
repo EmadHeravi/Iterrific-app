@@ -250,17 +250,19 @@
                                                         @endif
                                                     @endforeach
 
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-outline-secondary btn-sm mb-0"
-                                                        wire:click="selectDate('{{ $day['date'] }}')"
-                                                    >
-                                                        Add Hours
-                                                    </button>
+                                                    @if($canWriteTimeEntry)
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-outline-secondary btn-sm mb-0"
+                                                            wire:click="selectDate('{{ $day['date'] }}')"
+                                                        >
+                                                            Add Hours
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
-                                        @if($isSelected)
+                                        @if($isSelected && $canWriteTimeEntry)
                                             <tr class="time-entry-form-row">
                                                 <td colspan="7">
                                                     <div class="time-entry-editor p-3">

@@ -322,6 +322,8 @@ class UserManagement extends Component
 
     public function addAssignedEmployee($employeeId)
     {
+        $this->authorizeWrite();
+
         $employeeId = (int) $employeeId;
 
         if ($this->userIdBeingEdited && $employeeId === (int) $this->userIdBeingEdited) {
@@ -344,6 +346,8 @@ class UserManagement extends Component
 
     public function removeAssignedEmployee($employeeId)
     {
+        $this->authorizeWrite();
+
         $employeeId = (int) $employeeId;
 
         $this->assigned_employee_ids = collect($this->assigned_employee_ids)

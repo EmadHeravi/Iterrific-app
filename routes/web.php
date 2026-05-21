@@ -15,7 +15,6 @@ use App\Http\Livewire\ExampleLaravel\UserManagement;
 use App\Http\Livewire\ExampleLaravel\Projects;
 use App\Http\Livewire\ExampleLaravel\UserProfile;
 use App\Http\Livewire\Notifications;
-use App\Http\Livewire\Profile;
 use App\Http\Livewire\StaticSignIn;
 use App\Http\Livewire\StaticSignUp;
 use App\Http\Livewire\TimeEntry;
@@ -123,7 +122,7 @@ Route::post('/permission-preview', function (Request $request) {
     }
 
     return redirect()->route('dashboard');
-})->middleware('auth')->name('permission-preview.set');
+})->middleware(['auth', 'verified', 'twofactor'])->name('permission-preview.set');
 
 Route::delete('/permission-preview', function () {
     abort_unless(auth()->user()?->role === 'administrator', 403);
@@ -131,7 +130,7 @@ Route::delete('/permission-preview', function () {
     session()->forget('permission_preview_user_id');
 
     return back();
-})->middleware('auth')->name('permission-preview.clear');
+})->middleware(['auth', 'verified', 'twofactor'])->name('permission-preview.clear');
 
 
 Route::get('user-profile', UserProfile::class)->middleware(['auth', 'verified', 'twofactor', 'permission:user-profile'])->name('user-profile');
@@ -143,7 +142,7 @@ Route::get('calendars', Calendars::class)->middleware(['auth', 'verified', 'twof
 Route::group(['middleware' => ['auth', 'verified', 'twofactor']], function () {
 Route::get('dashboard', Dashboard::class)->middleware('permission:dashboard')->name('dashboard');
 Route::get('billing', Billing::class)->middleware('permission:billing')->name('billing');
-Route::get('profile', Profile::class)->middleware('permission:profile')->name('profile');
+Route::redirect('profile', 'user-profile')->middleware('permission:user-profile')->name('profile');
 Route::get('time-entry', TimeEntry::class)->middleware('permission:time-entry')->name('time-entry');
 Route::get('time-entry/export', function (Request $request) {
     abort_unless(auth()->user()->canRead('time-entry'), 403);
@@ -190,6 +189,12 @@ Route::get('approvals', Approvals::class)->middleware('permission:approvals')->n
 Route::get('approvals/export', function (Request $request) {
     abort_unless(auth()->user()->canRead('approvals'), 403);
 
+    $approvalUser = auth()->user();
+
+    if ($approvalUser->role === 'administrator' && session('permission_preview_user_id')) {
+        $approvalUser = User::find(session('permission_preview_user_id')) ?: $approvalUser;
+    }
+
     $data = $request->validate([
         'employee_id' => 'required|integer|exists:users,id',
         'year' => 'required|integer|min:2000|max:2100',
@@ -200,8 +205,8 @@ Route::get('approvals/export', function (Request $request) {
     $user = auth()->user();
 
     abort_unless(
-        $user->role === 'administrator'
-            || ($user->role === 'manager' && $user->managesEmployee($employee->id)),
+        ($user->role === 'administrator' && ! session('permission_preview_user_id'))
+            || ($approvalUser->role === 'manager' && $approvalUser->managesEmployee($employee->id)),
         403
     );
 

@@ -69,7 +69,9 @@ class Projects extends Component
 
     public function viewTeam($id)
     {
-        $this->teamProjectId = $id;
+        $project = $this->visibleProjectsQuery()->whereKey($id)->firstOrFail();
+
+        $this->teamProjectId = $project->id;
         $this->showTeamModal = true;
     }
 
@@ -179,14 +181,18 @@ class Projects extends Component
 
     public function render()
     {
-        $selectedUsers = User::whereIn('id', $this->assignedUsers)
+        $canWriteProjects = auth()->user()->canWrite('projects');
+
+        $selectedUsers = $canWriteProjects
+            ? User::whereIn('id', $this->assignedUsers)
             ->orderBy('first_name')
             ->orderBy('last_name')
-            ->get();
+            ->get()
+            : collect();
 
         $matchingUsers = collect();
 
-        if (strlen(trim($this->userSearch)) >= 2) {
+        if ($canWriteProjects && strlen(trim($this->userSearch)) >= 2) {
             $search = trim($this->userSearch);
 
             $matchingUsers = User::query()
@@ -203,17 +209,46 @@ class Projects extends Component
         }
 
         $teamProject = $this->teamProjectId
-            ? Project::with('users')->find($this->teamProjectId)
+            ? $this->visibleProjectsQuery()->with('users')->whereKey($this->teamProjectId)->first()
             : null;
 
         return view('livewire.example-laravel.projects', [
-            'projects' => Project::withCount('users')
+            'projects' => $this->visibleProjectsQuery()
+                ->withCount('users')
                 ->latest()
                 ->get(),
             'selectedUsers' => $selectedUsers,
             'matchingUsers' => $matchingUsers,
             'teamProject' => $teamProject,
-            'canWriteProjects' => auth()->user()->canWrite('projects'),
+            'canWriteProjects' => $canWriteProjects,
         ]);
+    }
+
+    private function visibleProjectsQuery()
+    {
+        if (auth()->user()->canWrite('projects')) {
+            return Project::query();
+        }
+
+        return $this->projectUser()
+            ->projects()
+            ->wherePivot('active', true);
+    }
+
+    private function projectUser(): User
+    {
+        $actor = auth()->user();
+
+        if ($actor->role !== 'administrator') {
+            return $actor;
+        }
+
+        $previewUserId = session('permission_preview_user_id');
+
+        if (! $previewUserId || (int) $previewUserId === (int) $actor->id) {
+            return $actor;
+        }
+
+        return User::find($previewUserId) ?: $actor;
     }
 }

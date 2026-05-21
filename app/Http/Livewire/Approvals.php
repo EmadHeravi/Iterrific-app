@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\TimeEntry;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
@@ -66,7 +67,7 @@ class Approvals extends Component
 
     private function scopedTimeEntriesQuery(): Builder
     {
-        $user = auth()->user();
+        $user = $this->approvalUser();
 
         $query = TimeEntry::with(['user', 'project', 'reviewer'])
             ->whereHas('user')
@@ -102,6 +103,7 @@ class Approvals extends Component
     public function render()
     {
         $month = $this->selectedMonth();
+        $approvalUser = $this->approvalUser();
 
         $pendingQuery = $this->scopedTimeEntriesQuery()
             ->where('status', 'submitted')
@@ -141,8 +143,8 @@ class Approvals extends Component
             'approvedCount' => $this->filteredStatusCount('approved', $month),
             'declinedCount' => $this->filteredStatusCount('declined', $month),
             'canWriteApprovals' => auth()->user()->canWrite('approvals'),
-            'isManagerWithoutAssignments' => auth()->user()->role === 'manager'
-                && auth()->user()->managedEmployees()->wherePivot('active', true)->doesntExist(),
+            'isManagerWithoutAssignments' => $approvalUser->role === 'manager'
+                && $approvalUser->managedEmployees()->wherePivot('active', true)->doesntExist(),
         ]);
     }
 
@@ -193,5 +195,22 @@ class Approvals extends Component
                 'label' => Carbon::create(null, $month, 1)->format('F'),
             ])
             ->all();
+    }
+
+    private function approvalUser(): User
+    {
+        $actor = auth()->user();
+
+        if ($actor->role !== 'administrator') {
+            return $actor;
+        }
+
+        $previewUserId = session('permission_preview_user_id');
+
+        if (! $previewUserId || (int) $previewUserId === (int) $actor->id) {
+            return $actor;
+        }
+
+        return User::find($previewUserId) ?: $actor;
     }
 }

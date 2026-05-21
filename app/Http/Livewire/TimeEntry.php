@@ -207,6 +207,10 @@ class TimeEntry extends Component
 
     public function canEditTimeEntry(TimeEntryModel $timeEntry): bool
     {
+        if (! auth()->user()->canWrite('time-entry')) {
+            return false;
+        }
+
         $user = auth()->user();
         $timeEntryUser = $this->timeEntryUser();
 
@@ -287,6 +291,7 @@ class TimeEntry extends Component
             'assignedProjects' => $this->assignedProjectsQuery()
                 ->orderBy('projects.name')
                 ->get(),
+            'canWriteTimeEntry' => auth()->user()->canWrite('time-entry'),
             'projectOptions' => $this->projectOptionsQuery()
                 ->orderBy('projects.name')
                 ->get(),
